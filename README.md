@@ -72,7 +72,42 @@ docker compose exec laravel.test php artisan migrate:fresh --seed
 
 ---
 
-## 4. Kiến Trúc Phần Mềm & Thiết Kế Hệ Thống
+## 4. Hướng Dẫn Kiểm Thử Bằng Postman (Nhanh & Tiện Lợi)
+
+Dự án đã đính kèm sẵn tệp tin cấu hình Postman Collection ở thư mục gốc: **`KienTrucPhanMem.postman_collection.json`**. Các thành viên trong nhóm làm theo các bước sau để test:
+
+1. **Import vào Postman:** Mở Postman, chọn **Import** ở góc trên bên trái, kéo thả file `KienTrucPhanMem.postman_collection.json` vào.
+2. **Cấu hình URL động (Biến `base_url`):**
+   * Click vào tên thư mục Collection *"Quản Lý Phòng Trọ - Kiến Trúc Phần Mềm"* vừa import ở cột trái.
+   * Chuyển sang tab **Variables** ở khung giữa.
+   * Tại biến `base_url`, nhập giá trị tại cột *Current Value* là địa chỉ đang chạy (ví dụ chạy offline: `http://localhost:8880` hoặc link Ngrok online dạng `https://xxx.ngrok-free.dev`).
+   * Bấm **Save (Ctrl + S)**.
+3. **Tiến hành gửi Request:** Chọn các API trong thư mục con (Phòng trọ, Khách thuê, Hợp đồng, Hóa đơn, Tài sản) và bấm **Send** để kiểm thử.
+
+> **💡 Điểm cải tiến của API Gửi Email Nhắc Nhở:**
+> API gửi mail (`POST /api/contracts/{id}/send-reminder`) đã được chuyển sang `api.php` để không bị lỗi bảo mật CSRF (419 Expired) trên Postman. Đồng thời, API này được lập trình thông minh: Nếu gửi Body trống, hệ thống sẽ tự động truy vấn MySQL lấy thông tin hợp đồng và khách thuê theo `{id}` để gửi đi, giúp việc test trên Postman cực kỳ nhanh gọn.
+
+---
+
+## 5. Hướng Dẫn Chia Sẻ Web & API Ra Ngoài Internet (Ngrok)
+
+Để thầy cô hoặc các thành viên khác trong nhóm có thể truy cập Web và test API trực tiếp từ điện thoại hoặc máy tính cá nhân của họ mà không cần cài đặt Docker:
+
+1. **Đăng ký tài khoản Ngrok:** Truy cập [ngrok.com](https://ngrok.com/) đăng ký tài khoản miễn phí để lấy mã Authtoken.
+2. **Cài đặt Token:** Mở Command Prompt hoặc PowerShell trên Windows và chạy lệnh sau (bỏ dấu ngoặc nhọn `< >` khi paste token):
+   ```cmd
+   ngrok config add-authtoken <YOUR_AUTHTOKEN>
+   ```
+3. **Mở cổng public:** Chạy lệnh sau để ánh xạ cổng Web Laravel lên internet:
+   ```cmd
+   ngrok http 8880
+   ```
+4. **Sử dụng:** Ngrok sẽ cung cấp một đường dẫn HTTPS dạng `https://xxx.ngrok-free.dev`. Chỉ cần gửi link này cho thầy cô/thành viên khác truy cập.
+   * *Lưu ý:* Giữ cửa sổ dòng lệnh chạy ngrok luôn mở trong suốt quá trình demo.
+
+---
+
+## 6. Kiến Trúc Phần Mềm & Thiết Kế Hệ Thống
 
 Dự án áp dụng cấu trúc phân tầng rõ ràng giúp tăng tính bảo trì và mở rộng:
 
@@ -83,29 +118,29 @@ Dự án áp dụng cấu trúc phân tầng rõ ràng giúp tăng tính bảo t
 
 ---
 
-## 5. Áp Dụng 6 Mẫu Thiết Kế (Design Patterns)
+## 7. Áp Dụng 6 Mẫu Thiết Kế (Design Patterns)
 
 ### **1. Mẫu Singleton**
 *   **Chi tiết:** Áp dụng cho kết nối CSDL MySQL thông qua Laravel Service Container. Kết nối chỉ được tạo một lần duy nhất trong chu kỳ request để tiết kiệm tài nguyên.
 
 ### **2. Mẫu Factory Method**
-*   **Vị trí file:** [DichVuFactory.php](file:///c:/Users/Quang%20Huy/source/repos/KienTrucPhanMem/laravel-app/app/Services/DichVuFactory.php)
+*   **Vị trí file:** `laravel-app/app/Services/DichVuFactory.php`
 *   **Chi tiết:** Cung cấp phương thức tĩnh `DichVuFactory::make(string $type)` để khởi tạo động các service nghiệp vụ (`PhongTroService`, `KhachThueService`,...) mà không cần gọi `new` trực tiếp ở Controller.
 
 ### **3. Mẫu Facade**
-*   **Vị trí file:** [QuanLyThueFacade.php](file:///c:/Users/Quang%20Huy/source/repos/KienTrucPhanMem/laravel-app/app/Facades/QuanLyThueFacade.php)
+*   **Vị trí file:** `laravel-app/app/Facades/QuanLyThueFacade.php`
 *   **Chi tiết:** Đơn giản hóa quy trình lập hợp đồng phức tạp (bao gồm tạo hợp đồng mới và đồng thời cập nhật trạng thái phòng trọ sang "Đã thuê") thành một lệnh gọi duy nhất.
 
 ### **4. Mẫu Adapter**
-*   **Vị trí file:** [HoaDonRequestAdapter.php](file:///c:/Users/Quang%20Huy/source/repos/KienTrucPhanMem/laravel-app/app/Adapters/HoaDonRequestAdapter.php)
+*   **Vị trí file:** `laravel-app/app/Adapters/HoaDonRequestAdapter.php`
 *   **Chi tiết:** Chuyển đổi và chuẩn hóa định dạng các trường dữ liệu đầu vào của request từ client (như `contractId`, `month`, `year`) thành các khóa thuộc tính tiếng Việt chuẩn trước khi chuyển giao cho tầng nghiệp vụ xử lý.
 
 ### **5. Mẫu Observer**
-*   **Vị trí file:** [HopDongObserver.php](file:///c:/Users/Quang%20Huy/source/repos/KienTrucPhanMem/laravel-app/app/Observers/HopDongObserver.php)
+*   **Vị trí file:** `laravel-app/app/Observers/HopDongObserver.php`
 *   **Chi tiết:** Đăng ký lắng nghe các sự kiện của Model `HopDong`. Khi một hợp đồng được khởi tạo mới hoặc được thanh lý, Observer sẽ tự động cập nhật trạng thái phòng trọ tương ứng sang "Đã thuê" hoặc "Trống" trong CSDL một cách hoàn toàn tự động.
 
 ### **6. Mẫu Strategy**
-*   **Vị trí file:** [TinhHoaDonStrategy.php](file:///c:/Users/Quang%20Huy/source/repos/KienTrucPhanMem/laravel-app/app/Strategies/TinhHoaDonStrategy.php)
+*   **Vị trí file:** `laravel-app/app/Strategies/TinhHoaDonStrategy.php`
 *   **Chi tiết:** Cho phép hệ thống thay đổi thuật toán tính hóa đơn hàng tháng linh hoạt:
     *   `TinhHoaDonMacDinhStrategy`: Tính tiền phòng + số điện cũ/mới + số nước cũ/mới.
     *   `TinhHoaDonTreHanStrategy`: Tính tương tự như mặc định nhưng cộng thêm phí đóng muộn cố định 150.000đ.
