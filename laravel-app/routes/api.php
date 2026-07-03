@@ -6,6 +6,7 @@ use App\Http\Controllers\KhachThueController;
 use App\Http\Controllers\HopDongController;
 use App\Http\Controllers\HoaDonController;
 use App\Http\Controllers\TaiSanController;
+use App\Http\Controllers\ContractMailController;
 
 // 1. API Danh Sách Phòng
 Route::get('/rooms', [PhongTroController::class, 'index']);
@@ -33,6 +34,7 @@ Route::post('/contracts', [HopDongController::class, 'store']);
 Route::put('/contracts/{id}', [HopDongController::class, 'update']);
 Route::delete('/contracts/{id}', [HopDongController::class, 'destroy']);
 Route::put('/contracts/{id}/terminate', [HopDongController::class, 'terminate']);
+Route::post('/contracts/{id}/send-reminder', [ContractMailController::class, 'sendReminder']);
 
 // 4. API Hóa Đơn
 Route::get('/invoices', [HoaDonController::class, 'index']);
