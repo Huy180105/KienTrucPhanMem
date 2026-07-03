@@ -1,0 +1,238 @@
+{
+	"info": {
+		"_postman_id": "a90b4d4f-d890-482a-a92c-55cbf3f9eb2c",
+		"name": "Quản Lý Phòng Trọ - Kiến Trúc Phần Mềm",
+		"description": "Bộ sưu tập API kiểm thử toàn bộ hệ thống Quản lý phòng trọ (Laravel + MySQL + Docker)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Phòng Trọ",
+			"item": [
+				{
+					"name": "Lấy danh sách phòng",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/rooms",
+							"host": ["{{base_url}}"],
+							"path": ["api", "rooms"]
+						}
+					}
+				},
+				{
+					"name": "Tìm kiếm phòng",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/rooms/search?keyword=101",
+							"host": ["{{base_url}}"],
+							"path": ["api", "rooms", "search"],
+							"query": [
+								{ "key": "keyword", "value": "101" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Thêm phòng trọ mới",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"maPhong\": \"P301\",\n  \"tenPhong\": \"Phòng 301\",\n  \"tang\": 3,\n  \"giaPhong\": 3500000,\n  \"trangThai\": \"Trống\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/rooms",
+							"host": ["{{base_url}}"],
+							"path": ["api", "rooms"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Khách Thuê",
+			"item": [
+				{
+					"name": "Lấy danh sách khách",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tenants",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tenants"]
+						}
+					}
+				},
+				{
+					"name": "Thêm khách thuê mới",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"hoTen\": \"Nguyễn Thị Bình\",\n  \"cccd\": \"030099112233\",\n  \"sdt\": \"0988776655\",\n  \"gioiTinh\": \"Nữ\",\n  \"ngaySinh\": \"2000-10-20\",\n  \"queQuan\": \"Nam Định\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tenants",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tenants"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Hợp Đồng",
+			"item": [
+				{
+					"name": "Lấy danh sách hợp đồng",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/contracts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "contracts"]
+						}
+					}
+				},
+				{
+					"name": "Lập hợp đồng mới (Facade & Observer)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"maPhong\": \"P301\",\n  \"maKhach\": 1,\n  \"ngayLap\": \"2026-07-04\",\n  \"ngayBatDau\": \"2026-07-04\",\n  \"ngayKetThuc\": \"2027-07-04\",\n  \"tienCoc\": 3500000,\n  \"giaThueThang\": 3500000,\n  \"trangThai\": \"Đang hiệu lực\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/contracts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "contracts"]
+						}
+					}
+				},
+				{
+					"name": "Gửi email nhắc nhở hợp đồng",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/contracts/1001/send-reminder",
+							"host": ["{{base_url}}"],
+							"path": ["api", "contracts", "1001", "send-reminder"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Hóa Đơn",
+			"item": [
+				{
+					"name": "Lấy danh sách hóa đơn",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices"]
+						}
+					}
+				},
+				{
+					"name": "Tính hóa đơn - Mặc định (Strategy)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"contractId\": 1001,\n  \"month\": 7,\n  \"year\": 2026,\n  \"soDienCu\": 100,\n  \"soDienMoi\": 150,\n  \"soNuocCu\": 10,\n  \"soNuocMoi\": 15,\n  \"isLate\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/invoices/calculate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "calculate"]
+						}
+					}
+				},
+				{
+					"name": "Tính hóa đơn - Trễ hạn đóng phạt (Strategy)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"contractId\": 1001,\n  \"month\": 7,\n  \"year\": 2026,\n  \"soDienCu\": 100,\n  \"soDienMoi\": 150,\n  \"soNuocCu\": 10,\n  \"soNuocMoi\": 15,\n  \"isLate\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/invoices/calculate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "calculate"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Tài Sản",
+			"item": [
+				{
+					"name": "Lấy danh sách tài sản",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/assets",
+							"host": ["{{base_url}}"],
+							"path": ["api", "assets"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://upcountry-startle-unselfish.ngrok-free.dev",
+			"type": "string"
+		}
+	]
+}
