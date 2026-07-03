@@ -23,5 +23,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         HopDong::observe(HopDongObserver::class);
+
+        if (request()->header('X-Forwarded-Proto') === 'https' || str_contains(request()->header('Host', ''), 'ngrok-free')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
     }
 }
