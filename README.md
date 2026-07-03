@@ -6,17 +6,22 @@ Dự án môn học **Kiến trúc phần mềm** xây dựng ứng dụng Quả
 
 ## 1. Thành Phần & Địa Chỉ Truy Cập Dịch Vụ
 
-Khi hệ thống Docker vận hành, các dịch vụ sẽ hoạt động tại các địa chỉ sau:
+Khi hệ thống vận hành, các dịch vụ hoạt động tại các địa chỉ sau:
 
-*   **🌐 Giao diện Web (Ứng dụng chính):** [http://localhost:8880](http://localhost:8880)
-*   **🗃️ phpMyAdmin (Quản lý Cơ sở dữ liệu):** [http://localhost:8881](http://localhost:8881)
+### **🚀 Địa Chỉ Truy Cập Trực Tuyến (Bản Deploy Online):**
+*   **🌐 Giao diện Web chính thức (Railway Cloud 24/7):** [https://kientrucphanmem.up.railway.app](https://kientrucphanmem.up.railway.app)
+*   **🌐 Giao diện Web chia sẻ tạm thời (Ngrok Tunnel):** [https://upcountry-startle-unselfish.ngrok-free.dev](https://upcountry-startle-unselfish.ngrok-free.dev)
+
+### **💻 Địa Chỉ Triển Khai Cục Bộ (Localhost Docker):**
+*   **🌐 Giao diện Web local:** [http://localhost:8880](http://localhost:8880)
+*   **🗃️ phpMyAdmin local:** [http://localhost:8881](http://localhost:8881)
     *   *Tài khoản:* Username: `sail` | Password: `password`
-*   **✉️ Mailpit (Hòm thư thử nghiệm gửi mail nhắc hợp đồng):** [http://localhost:8025](http://localhost:8025)
-*   **💾 Cổng MySQL (Kết nối ngoài):** `localhost:8882`
+*   **✉️ Mailpit local (Hòm thư ảo gửi mail nhắc hợp đồng):** [http://localhost:8025](http://localhost:8025)
+*   **💾 Cổng MySQL local (Kết nối ngoài):** `localhost:8882`
 
 ---
 
-## 2. Hướng Dẫn Cài Đặt Hệ Thống Từ Đầu
+## 2. Hướng Dẫn Cài Đặt Hệ Thống Từ Đầu (Chạy Local)
 
 ### **Bước 1: Cài đặt Linux cho Windows (WSL 2)**
 Docker Desktop trên Windows yêu cầu WSL 2 làm backend để tối ưu hóa hiệu năng:
@@ -49,7 +54,7 @@ Copy-Item .env.example .env
 
 ---
 
-## 3. Các Lệnh PowerShell Vận Hành Hệ Thống
+## 3. Các Lệnh PowerShell Vận Hành Hệ Thống (Local)
 
 *Các lệnh dưới đây phải được chạy tại thư mục `KienTrucPhanMem/laravel-app`:*
 
