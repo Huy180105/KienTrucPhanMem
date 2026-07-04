@@ -166,4 +166,25 @@ class HoaDonController extends Controller
             'strategy_applied' => $strategyType
         ]);
     }
+
+    public function sendEmail($id)
+    {
+        try {
+            $invoice = $this->service->find($id);
+            $tenant = $invoice->hopDong->khachThue ?? null;
+
+            if (!$tenant || empty($tenant->email)) {
+                return response()->json(['message' => 'Lỗi: Khách thuê của hợp đồng này chưa đăng ký địa chỉ email.'], 400);
+            }
+
+            \Illuminate\Support\Facades\Mail::to($tenant->email)->send(new \App\Mail\HoaDonMail($invoice));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Gửi email hóa đơn thành công đến email: ' . $tenant->email
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Lỗi gửi mail: ' . $e->getMessage()], 500);
+        }
+    }
 }

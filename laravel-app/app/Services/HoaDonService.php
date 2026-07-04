@@ -13,7 +13,7 @@ class HoaDonService
 
     public function find($id)
     {
-        return HoaDon::with('hopDong.khachThue')->findOrFail($id);
+        return HoaDon::with(['hopDong.khachThue', 'hopDong.phongTro'])->findOrFail($id);
     }
 
     public function create(array $data)

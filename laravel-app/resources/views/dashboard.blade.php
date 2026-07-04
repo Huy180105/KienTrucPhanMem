@@ -712,6 +712,11 @@
                                                 <template x-if="invoice.trangThai === 'Chưa thanh toán'">
                                                     <button @click="payInvoice(invoice.maHD)" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition">Thanh toán</button>
                                                 </template>
+                                                <button @click="sendInvoiceEmail(invoice.maHD, $event)" 
+                                                        class="p-1.5 hover:bg-indigo-50 text-indigo-600 rounded-lg transition" 
+                                                        title="Gửi Email Hóa Đơn">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                                </button>
                                                 <button @click="deleteInvoice(invoice.maHD)" 
                                                         :class="invoice.trangThai === 'Chưa thanh toán' ? 'opacity-35 cursor-not-allowed text-slate-400' : 'hover:bg-rose-50 text-rose-600'" 
                                                         class="p-1.5 rounded-lg transition" 
@@ -1226,6 +1231,7 @@ function rentalApp() {
         tenants: [],
         contracts: [],
         invoices: [],
+        sendingEmails: [],
         assets: [],
 
         // Modal Forms State
@@ -1762,6 +1768,29 @@ function rentalApp() {
                     })
                     .catch(err => alert('Lỗi xóa hóa đơn: ' + (err.response?.data?.message || err.message)));
             }
+        },
+
+        sendInvoiceEmail(maHD, event) {
+            if (this.sendingEmails.includes(maHD)) return;
+            this.sendingEmails.push(maHD);
+            
+            const btn = event.currentTarget;
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin h-4 w-4 text-indigo-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+            
+            axios.post('/api/invoices/' + maHD + '/send-email')
+                .then(res => {
+                    alert(res.data.message);
+                })
+                .catch(err => {
+                    alert('Lỗi gửi email: ' + (err.response?.data?.message || err.message));
+                })
+                .finally(() => {
+                    this.sendingEmails = this.sendingEmails.filter(id => id !== maHD);
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                });
         },
 
         // --- ASSETS CRUD ---

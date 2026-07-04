@@ -46,6 +46,7 @@ Route::put('/invoices/{id}', [HoaDonController::class, 'update']);
 Route::delete('/invoices/{id}', [HoaDonController::class, 'destroy']);
 Route::post('/invoices/calculate', [HoaDonController::class, 'calculate']);
 Route::put('/invoices/{id}/pay', [HoaDonController::class, 'pay']);
+Route::post('/invoices/{id}/send-email', [HoaDonController::class, 'sendEmail']);
 
 // 5. API Tài Sản
 Route::get('/assets', [TaiSanController::class, 'index']);
