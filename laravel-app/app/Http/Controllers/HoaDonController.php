@@ -33,9 +33,22 @@ class HoaDonController extends Controller
     {
         $data = $this->adapter->toHoaDonData($request->all());
 
+        $currentYear = (int)date('Y');
+        $currentMonth = (int)date('m');
+
         $request->validate([
             'maHopDong' => 'required|integer|exists:hop_dongs,maHopDong',
-            'thang' => 'required|integer|between:1,12',
+            'thang' => [
+                'required',
+                'integer',
+                'between:1,12',
+                function ($attribute, $value, $fail) use ($request, $currentYear, $currentMonth) {
+                    $year = (int)$request->input('nam');
+                    if ($year > $currentYear || ($year === $currentYear && (int)$value > $currentMonth)) {
+                        $fail('Kỳ hóa đơn (tháng/năm) không được vượt quá tháng/năm hiện tại.');
+                    }
+                }
+            ],
             'nam' => 'required|integer|min:2020',
             'ngayLap' => 'required|date',
             'tongTien' => 'required|numeric|min:0',

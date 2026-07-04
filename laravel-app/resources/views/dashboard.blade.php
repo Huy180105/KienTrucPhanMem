@@ -1582,10 +1582,10 @@ function rentalApp() {
                 thang: new Date().getMonth() + 1,
                 nam: new Date().getFullYear(),
                 ngayLap: new Date().toISOString().split('T')[0],
-                dienCu: 100,
-                dienMoi: 120,
-                nuocCu: 10,
-                nuocMoi: 15,
+                dienCu: 0,
+                dienMoi: 0,
+                nuocCu: 0,
+                nuocMoi: 0,
                 strategy: 'default',
                 baseRent: 0,
                 tongTien: 0
@@ -1613,6 +1613,12 @@ function rentalApp() {
             const form = this.invoiceForm;
             if (!form.maHopDong) return;
 
+            // Simple validation check before sending API to avoid console error logs
+            if (form.dienMoi < form.dienCu || form.nuocMoi < form.nuocCu) {
+                form.tongTien = form.baseRent;
+                return;
+            }
+
             axios.post('/api/invoices/calculate', {
                 maHopDong: form.maHopDong,
                 dienCu: form.dienCu,
@@ -1631,6 +1637,29 @@ function rentalApp() {
 
         saveInvoice() {
             if (!this.checkAdminPermission()) return;
+
+            const form = this.invoiceForm;
+
+            // 1. Check new readings vs old readings
+            if (form.dienMoi < form.dienCu) {
+                alert('Lỗi: Số điện mới phải lớn hơn hoặc bằng số điện cũ.');
+                return;
+            }
+            if (form.nuocMoi < form.nuocCu) {
+                alert('Lỗi: Số nước mới phải lớn hơn hoặc bằng số nước cũ.');
+                return;
+            }
+
+            // 2. Check billing period must be <= today's month/year
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth() + 1;
+
+            if (form.nam > currentYear || (form.nam === currentYear && form.thang > currentMonth)) {
+                alert('Lỗi: Kỳ hóa đơn (Tháng/Năm) không được lớn hơn tháng/năm hiện tại.');
+                return;
+            }
+
             axios.post('/api/invoices', this.invoiceForm)
                 .then(res => {
                     this.fetchInvoices();
