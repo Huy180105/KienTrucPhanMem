@@ -782,8 +782,12 @@
                                         </td>
                                         <td class="py-4 px-6">
                                             <div class="flex justify-center items-center gap-2">
-                                                <button @click="openEditAsset(asset)" class="p-1 hover:bg-slate-100 text-indigo-600 rounded transition"><i data-lucide="edit" class="w-4 h-4"></i></button>
-                                                <button @click="deleteAsset(asset.maTaiSan)" class="p-1 hover:bg-rose-50 text-rose-600 rounded transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                                <button @click="openEditAsset(asset)" class="p-1.5 hover:bg-slate-100 text-indigo-600 rounded-lg transition" title="Sửa tài sản">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                                </button>
+                                                <button @click="deleteAsset(asset.maTaiSan)" class="p-1.5 hover:bg-rose-50 text-rose-600 rounded-lg transition" title="Xóa tài sản">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
