@@ -66,4 +66,9 @@ class TaiSanController extends Controller
     {
         return response()->json($this->service->byRoom($roomId));
     }
+
+    public function getLogs()
+    {
+        return response()->json(\App\Models\TaiSanLog::orderBy('created_at', 'desc')->get());
+    }
 }

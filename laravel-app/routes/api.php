@@ -50,6 +50,7 @@ Route::put('/invoices/{id}/pay', [HoaDonController::class, 'pay']);
 // 5. API Tài Sản
 Route::get('/assets', [TaiSanController::class, 'index']);
 Route::get('/assets/search', [TaiSanController::class, 'search']);
+Route::get('/assets/logs', [TaiSanController::class, 'getLogs']);
 Route::get('/assets/{id}', [TaiSanController::class, 'show']);
 Route::post('/assets', [TaiSanController::class, 'store']);
 Route::put('/assets/{id}', [TaiSanController::class, 'update']);

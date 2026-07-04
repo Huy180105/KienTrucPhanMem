@@ -5,8 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class TaiSan extends Model
 {
+    use SoftDeletes;
     protected $table = 'tai_sans';
     protected $primaryKey = 'maTaiSan';
 

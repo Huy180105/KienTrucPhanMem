@@ -19,19 +19,28 @@
                 </div>
             </div>
 
-            <!-- Profile Info -->
-            <div class="px-6 py-6 border-b border-slate-800 bg-slate-950/20">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-base shadow-lg">
-                        QL
+            <!-- Profile Info & Role Switcher (NFR-03) -->
+            <div class="px-6 py-5 border-b border-slate-800 bg-slate-950/20">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-base shadow-lg"
+                         x-text="userRole === 'admin' ? 'AD' : 'KH'">
+                        AD
                     </div>
                     <div>
-                        <div class="text-sm font-semibold text-white">Admin Quản Lý</div>
+                        <div class="text-sm font-semibold text-white" x-text="userRole === 'admin' ? 'Quản trị viên' : 'Khách xem'">Admin Quản Lý</div>
                         <div class="text-xs text-slate-500 flex items-center gap-1">
                             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                             Trực tuyến
                         </div>
                     </div>
+                </div>
+                <!-- Role selector dropdown -->
+                <div class="mt-2">
+                    <label class="text-[9px] text-slate-500 uppercase tracking-wider block mb-1">Chọn vai trò (NFR-03)</label>
+                    <select x-model="userRole" @change="changeRole()" class="w-full bg-slate-800 text-slate-200 border border-slate-700 rounded-lg text-xs py-1.5 px-2 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                        <option value="admin">Quản trị viên</option>
+                        <option value="viewer">Khách (Chỉ xem)</option>
+                    </select>
                 </div>
             </div>
 
@@ -742,6 +751,69 @@
                         </table>
                     </div>
                 </div>
+
+                <!-- NFR-02: Bảng lịch sử đối soát tài sản -->
+                <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm mt-6">
+                    <div class="bg-slate-50 border-b border-slate-100 p-4 flex items-center justify-between">
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                <i data-lucide="history" class="w-4 h-4 text-indigo-600"></i>
+                                Nhật Ký Đối Soát Dữ Liệu Tài Sản (NFR-02 - Tính toàn vẹn)
+                            </h4>
+                            <p class="text-[11px] text-slate-400">Tự động ghi nhận mọi thay đổi, không xóa vĩnh viễn dữ liệu gốc (Xóa mềm)</p>
+                        </div>
+                        <button @click="fetchAssetLogs()" class="p-1.5 hover:bg-slate-200 text-slate-600 rounded transition" title="Làm mới">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 bg-slate-50/50 text-slate-450 text-[10px] font-bold uppercase">
+                                    <th class="py-2.5 px-6 w-32">Thời Gian</th>
+                                    <th class="py-2.5 px-6 w-24">Mã Tài Sản</th>
+                                    <th class="py-2.5 px-6 w-40">Tên Tài Sản</th>
+                                    <th class="py-2.5 px-6 w-32">Hành Động</th>
+                                    <th class="py-2.5 px-6">Chi Tiết Thay Đổi</th>
+                                    <th class="py-2.5 px-6 w-36">Người Thực Hiện</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
+                                <template x-for="log in assetLogs" :key="log.id">
+                                    <tr class="hover:bg-slate-50/30 transition">
+                                        <td class="py-3 px-6 text-slate-400 font-medium" x-text="formatDate(log.created_at) + ' ' + new Date(log.created_at).toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})"></td>
+                                        <td class="py-3 px-6 font-bold text-slate-700" x-text="'TS' + log.maTaiSan"></td>
+                                        <td class="py-3 px-6 font-semibold text-slate-800" x-text="log.tenTaiSan"></td>
+                                        <td class="py-3 px-6">
+                                            <span :class="{
+                                                'bg-emerald-50 text-emerald-600 border border-emerald-100': log.hanhDong === 'THÊM MỚI',
+                                                'bg-amber-50 text-amber-600 border border-amber-100': log.hanhDong === 'CẬP NHẬT',
+                                                'bg-rose-50 text-rose-600 border border-rose-100': log.hanhDong === 'THANH LÝ'
+                                            }" class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase" x-text="log.hanhDong"></span>
+                                        </td>
+                                        <td class="py-3 px-6 leading-relaxed">
+                                            <div x-show="log.trangThaiCu" class="text-slate-400 font-medium">
+                                                <span class="text-slate-400 font-bold">Từ:</span> <span x-text="log.trangThaiCu"></span>
+                                            </div>
+                                            <div x-show="log.trangThaiMoi" class="text-indigo-600 font-bold">
+                                                <span class="text-slate-500 font-bold">Đến:</span> <span x-text="log.trangThaiMoi"></span>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-6 font-medium text-slate-700 flex items-center gap-1.5">
+                                            <span class="w-1.5 h-1.5 rounded-full animate-pulse" :class="log.nguoiThucHien === 'Quản trị viên' ? 'bg-indigo-500' : 'bg-amber-500'"></span>
+                                            <span x-text="log.nguoiThucHien"></span>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <template x-if="assetLogs.length === 0">
+                                    <tr>
+                                        <td colspan="6" class="py-6 text-center text-slate-400 italic">Chưa có hoạt động nào được ghi nhận.</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -1028,6 +1100,10 @@
 <script>
 function rentalApp() {
     return {
+        // Role system & logs (NFR-03 & NFR-02)
+        userRole: 'admin',
+        assetLogs: [],
+
         // Tab system
         activeTab: 'dashboard',
         tabTitles: {
@@ -1083,12 +1159,16 @@ function rentalApp() {
                 axios.defaults.headers.common['X-CSRF-TOKEN'] = tokenMeta.getAttribute('content');
             }
 
+            // Configure Axios X-User-Role header automatically (NFR-03)
+            axios.defaults.headers.common['X-User-Role'] = this.userRole;
+
             // Load all database entities from backend
             this.fetchRooms();
             this.fetchTenants();
             this.fetchContracts();
             this.fetchInvoices();
             this.fetchAssets();
+            this.fetchAssetLogs();
 
             // Render Lucide icons when window finishes initializing
             this.$nextTick(() => {
@@ -1128,6 +1208,21 @@ function rentalApp() {
             axios.get('/api/assets')
                 .then(res => { this.assets = res.data; })
                 .catch(err => console.error('Lỗi tải danh sách tài sản:', err));
+        },
+        fetchAssetLogs() {
+            axios.get('/api/assets/logs')
+                .then(res => { this.assetLogs = res.data; })
+                .catch(err => console.error('Lỗi tải nhật ký đối soát:', err));
+        },
+        changeRole() {
+            axios.defaults.headers.common['X-User-Role'] = this.userRole;
+        },
+        checkAdminPermission() {
+            if (this.userRole !== 'admin') {
+                alert('Yêu cầu bảo mật (NFR-03): Chỉ Quản trị viên mới được phép thực hiện các chức năng Thêm, Sửa, Xóa.');
+                return false;
+            }
+            return true;
         },
 
         // Helper: Formatting Currency
@@ -1251,6 +1346,7 @@ function rentalApp() {
         },
 
         saveRoom() {
+            if (!this.checkAdminPermission()) return;
             if (this.isEditingRoom) {
                 axios.put('/api/rooms/' + this.roomForm.maPhong, this.roomForm)
                     .then(res => {
@@ -1269,6 +1365,7 @@ function rentalApp() {
         },
 
         deleteRoom(maPhong) {
+            if (!this.checkAdminPermission()) return;
             if (confirm(`Bạn có chắc muốn xóa phòng ${maPhong}?`)) {
                 axios.delete('/api/rooms/' + maPhong)
                     .then(() => {
@@ -1295,6 +1392,7 @@ function rentalApp() {
         },
 
         saveTenant() {
+            if (!this.checkAdminPermission()) return;
             if (this.isEditingTenant) {
                 axios.put('/api/tenants/' + this.tenantForm.maKhach, this.tenantForm)
                     .then(res => {
@@ -1313,6 +1411,7 @@ function rentalApp() {
         },
 
         deleteTenant(maKhach) {
+            if (!this.checkAdminPermission()) return;
             if (confirm('Bạn có chắc muốn xóa thông tin khách thuê này?')) {
                 axios.delete('/api/tenants/' + maKhach)
                     .then(() => {
@@ -1346,6 +1445,7 @@ function rentalApp() {
         },
 
         saveContract() {
+            if (!this.checkAdminPermission()) return;
             axios.post('/api/contracts', this.contractForm)
                 .then(res => {
                     this.fetchContracts();
@@ -1356,6 +1456,7 @@ function rentalApp() {
         },
 
         terminateContract(maHopDong) {
+            if (!this.checkAdminPermission()) return;
             if (confirm('Bạn có chắc chắn muốn thanh lý hợp đồng này? Trạng thái phòng sẽ được cập nhật về trống.')) {
                 axios.put('/api/contracts/' + maHopDong + '/terminate')
                     .then(res => {
@@ -1367,6 +1468,7 @@ function rentalApp() {
         },
 
         deleteContract(maHopDong) {
+            if (!this.checkAdminPermission()) return;
             if (confirm('Xóa hợp đồng này khỏi cơ sở dữ liệu?')) {
                 axios.delete('/api/contracts/' + maHopDong)
                     .then(() => {
@@ -1467,6 +1569,7 @@ function rentalApp() {
         },
 
         saveInvoice() {
+            if (!this.checkAdminPermission()) return;
             axios.post('/api/invoices', this.invoiceForm)
                 .then(res => {
                     this.fetchInvoices();
@@ -1476,6 +1579,7 @@ function rentalApp() {
         },
 
         payInvoice(maHD) {
+            if (!this.checkAdminPermission()) return;
             axios.put('/api/invoices/' + maHD + '/pay')
                 .then(res => {
                     this.fetchInvoices();
@@ -1485,6 +1589,7 @@ function rentalApp() {
         },
 
         deleteInvoice(maHD) {
+            if (!this.checkAdminPermission()) return;
             if (confirm('Xóa hóa đơn này?')) {
                 axios.delete('/api/invoices/' + maHD)
                     .then(() => {
@@ -1519,6 +1624,7 @@ function rentalApp() {
                 axios.put('/api/assets/' + this.assetForm.maTaiSan, this.assetForm)
                     .then(res => {
                         this.fetchAssets();
+                        this.fetchAssetLogs();
                         this.showAssetModal = false;
                     })
                     .catch(err => alert('Lỗi cập nhật tài sản: ' + (err.response?.data?.message || err.message)));
@@ -1526,6 +1632,7 @@ function rentalApp() {
                 axios.post('/api/assets', this.assetForm)
                     .then(res => {
                         this.fetchAssets();
+                        this.fetchAssetLogs();
                         this.showAssetModal = false;
                     })
                     .catch(err => alert('Lỗi thêm tài sản: ' + (err.response?.data?.message || err.message)));
@@ -1537,6 +1644,7 @@ function rentalApp() {
                 axios.delete('/api/assets/' + maTaiSan)
                     .then(() => {
                         this.fetchAssets();
+                        this.fetchAssetLogs();
                     })
                     .catch(err => alert('Lỗi xóa tài sản: ' + (err.response?.data?.message || err.message)));
             }
