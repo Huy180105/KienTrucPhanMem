@@ -99,8 +99,6 @@
             <div class="flex items-center gap-2">
                 <h2 class="text-xl font-bold text-slate-800" 
                     x-text="tabTitles[activeTab]"></h2>
-                <span class="text-xs text-slate-400 font-medium px-2 py-0.5 bg-slate-100 rounded-full uppercase"
-                      x-text="activeTab"></span>
             </div>
             
             <div class="flex items-center gap-4">
