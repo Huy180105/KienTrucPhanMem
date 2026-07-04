@@ -34,13 +34,23 @@
                         </div>
                     </div>
                 </div>
-                <!-- Role selector dropdown -->
-                <div class="mt-2">
-                    <label class="text-[9px] text-slate-500 uppercase tracking-wider block mb-1">Chọn vai trò (NFR-03)</label>
-                    <select x-model="userRole" @change="changeRole()" class="w-full bg-slate-800 text-slate-200 border border-slate-700 rounded-lg text-xs py-1.5 px-2 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
-                        <option value="admin">Quản trị viên</option>
-                        <option value="viewer">Khách (Chỉ xem)</option>
-                    </select>
+                <!-- Sleek Segmented Switcher (NFR-03) -->
+                <div class="mt-4 bg-slate-950/40 p-1.5 rounded-xl border border-slate-800/80">
+                    <label class="text-[9px] text-slate-500 font-extrabold uppercase tracking-wider block px-1.5 mb-1.5">Phân quyền vai trò (NFR-03)</label>
+                    <div class="grid grid-cols-2 gap-1 bg-slate-950 p-1 rounded-lg">
+                        <button @click="userRole = 'admin'; changeRole()"
+                                :class="userRole === 'admin' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'"
+                                class="py-1.5 rounded-md text-[10px] font-bold text-center transition duration-200 flex items-center justify-center gap-1.5 focus:outline-none">
+                            <span class="w-1.5 h-1.5 rounded-full" :class="userRole === 'admin' ? 'bg-emerald-400 animate-pulse' : 'bg-slate-600'"></span>
+                            Quản trị
+                        </button>
+                        <button @click="userRole = 'viewer'; changeRole()"
+                                :class="userRole === 'viewer' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'"
+                                class="py-1.5 rounded-md text-[10px] font-bold text-center transition duration-200 flex items-center justify-center gap-1.5 focus:outline-none">
+                            <span class="w-1.5 h-1.5 rounded-full" :class="userRole === 'viewer' ? 'bg-amber-400 animate-pulse' : 'bg-slate-600'"></span>
+                            Khách xem
+                        </button>
+                    </div>
                 </div>
             </div>
 
