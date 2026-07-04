@@ -714,9 +714,9 @@
                                                 </template>
                                                 <button @click="deleteInvoice(invoice.maHD)" 
                                                         :class="invoice.trangThai === 'Chưa thanh toán' ? 'opacity-35 cursor-not-allowed text-slate-400' : 'hover:bg-rose-50 text-rose-600'" 
-                                                        class="p-1 rounded transition" 
+                                                        class="p-1.5 rounded-lg transition" 
                                                         :title="invoice.trangThai === 'Chưa thanh toán' ? 'Không thể xóa hóa đơn chưa thanh toán' : 'Xóa hóa đơn'">
-                                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
                                                 </button>
                                             </div>
                                         </td>
