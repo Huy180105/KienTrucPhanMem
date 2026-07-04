@@ -3,6 +3,31 @@
 @section('title', 'Quản Lý Phòng Trọ')
 
 @section('content')
+<style>
+    /* Bulletproof hover styles bypassing Tailwind build step */
+    .room-card-container {
+        position: relative;
+    }
+    .room-actions {
+        position: absolute;
+        right: 12px;
+        top: 12px;
+        display: flex;
+        gap: 4px;
+        opacity: 0;
+        transition: opacity 0.15s ease-in-out;
+        z-index: 20;
+    }
+    .room-card-container:hover .room-actions {
+        opacity: 1 !important;
+    }
+    .room-status-badge {
+        transition: opacity 0.15s ease-in-out;
+    }
+    .room-card-container:hover .room-status-badge {
+        opacity: 0 !important;
+    }
+</style>
 <div class="flex h-full w-full bg-slate-50 overflow-hidden" 
      x-data="rentalApp()" 
      x-init="initApp()">
@@ -333,11 +358,11 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <template x-for="room in filteredRooms()" :key="room.maPhong">
                         <div @click="selectRoom(room)" 
-                             class="bg-white border border-slate-200 hover:border-indigo-400 rounded-2xl p-5 shadow-sm hover:shadow-md cursor-pointer transition-all duration-200 group flex flex-col justify-between relative overflow-hidden"
+                             class="bg-white border border-slate-200 hover:border-indigo-400 rounded-2xl p-5 shadow-sm hover:shadow-md cursor-pointer transition-all duration-200 group flex flex-col justify-between relative overflow-hidden room-card-container"
                              :class="selectedRoom && selectedRoom.maPhong === room.maPhong ? 'ring-2 ring-indigo-500 border-transparent bg-indigo-50/20' : ''">
                              
                              <!-- Direct Edit/Delete Buttons (Hover visible) -->
-                             <div class="absolute right-3 top-3 flex gap-1 opacity-0 group-hover:opacity-100 transition duration-150 z-20">
+                             <div class="absolute right-3 top-3 gap-1 z-20 room-actions">
                                  <button @click.stop="openEditRoom(room)" class="p-1.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-slate-500 hover:text-indigo-600 transition shadow-sm" title="Chỉnh sửa">
                                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                                  </button>
@@ -352,7 +377,7 @@
                                         <i data-lucide="key" class="w-5 h-5"></i>
                                     </div>
                                     <span :class="getRoomStatusClass(room.trangThai)" 
-                                          class="px-2.5 py-0.5 rounded-full text-xs font-bold transition duration-155 group-hover:opacity-0" 
+                                          class="px-2.5 py-0.5 rounded-full text-xs font-bold transition duration-155 room-status-badge" 
                                           x-text="room.trangThai"></span>
                                 </div>
                                 <h4 class="text-base font-extrabold text-slate-800 mb-1" x-text="room.tenPhong"></h4>
