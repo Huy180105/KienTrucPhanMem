@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Quản Lý Phòng Trọ - Dashboard Điều Hành')
+@section('title', 'Quản Lý Phòng Trọ')
 
 @section('content')
 <div class="flex h-full w-full bg-slate-50 overflow-hidden" 
@@ -19,37 +19,18 @@
                 </div>
             </div>
 
-            <!-- Profile Info & Role Switcher (NFR-03) -->
-            <div class="px-6 py-5 border-b border-slate-800 bg-slate-950/20">
-                <div class="flex items-center gap-3 mb-3">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-base shadow-lg"
-                         x-text="userRole === 'admin' ? 'AD' : 'KH'">
-                        AD
+            <!-- Profile Info -->
+            <div class="px-6 py-6 border-b border-slate-800 bg-slate-950/20">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-base shadow-lg">
+                        QL
                     </div>
                     <div>
-                        <div class="text-sm font-semibold text-white" x-text="userRole === 'admin' ? 'Quản trị viên' : 'Khách xem'">Admin Quản Lý</div>
+                        <div class="text-sm font-semibold text-white">Quản trị viên</div>
                         <div class="text-xs text-slate-500 flex items-center gap-1">
                             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                             Trực tuyến
                         </div>
-                    </div>
-                </div>
-                <!-- Sleek Segmented Switcher (NFR-03) -->
-                <div class="mt-4 bg-slate-950/40 p-1.5 rounded-xl border border-slate-800/80">
-                    <label class="text-[9px] text-slate-500 font-extrabold uppercase tracking-wider block px-1.5 mb-1.5">Phân quyền vai trò (NFR-03)</label>
-                    <div class="grid grid-cols-2 gap-1 bg-slate-950 p-1 rounded-lg">
-                        <button @click="userRole = 'admin'; changeRole()"
-                                :class="userRole === 'admin' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'"
-                                class="py-1.5 rounded-md text-[10px] font-bold text-center transition duration-200 flex items-center justify-center gap-1.5 focus:outline-none">
-                            <span class="w-1.5 h-1.5 rounded-full" :class="userRole === 'admin' ? 'bg-emerald-400 animate-pulse' : 'bg-slate-600'"></span>
-                            Quản trị
-                        </button>
-                        <button @click="userRole = 'viewer'; changeRole()"
-                                :class="userRole === 'viewer' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'"
-                                class="py-1.5 rounded-md text-[10px] font-bold text-center transition duration-200 flex items-center justify-center gap-1.5 focus:outline-none">
-                            <span class="w-1.5 h-1.5 rounded-full" :class="userRole === 'viewer' ? 'bg-amber-400 animate-pulse' : 'bg-slate-600'"></span>
-                            Khách xem
-                        </button>
                     </div>
                 </div>
             </div>
@@ -132,13 +113,20 @@
                     <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
                 </div>
 
-                <!-- Profile summary -->
-                <div class="flex items-center gap-2 pl-4 border-l border-slate-200">
-                    <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 font-semibold text-sm">
+                <!-- Profile summary (Interactive role toggler - NFR-03) -->
+                <button @click="userRole = (userRole === 'admin' ? 'viewer' : 'admin'); changeRole()" 
+                        class="flex items-center gap-2 pl-4 border-l border-slate-200 focus:outline-none hover:opacity-80 transition group"
+                        title="Click để chuyển đổi vai trò (NFR-03)">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-sm transition"
+                         :class="userRole === 'admin' ? 'bg-indigo-50 text-indigo-600' : 'bg-amber-50 text-amber-600'"
+                         x-text="userRole === 'admin' ? 'AD' : 'KS'">
                         AD
                     </div>
-                    <span class="text-sm font-semibold text-slate-700">Administrator</span>
-                </div>
+                    <div class="text-left">
+                        <span class="text-xs font-bold block text-slate-800" x-text="userRole === 'admin' ? 'Administrator' : 'Khách Xem'">Administrator</span>
+                        <span class="text-[9px] text-slate-400 font-medium block" x-text="userRole === 'admin' ? 'Quyền: Quản trị viên' : 'Quyền: Chỉ xem'">Quyền: Quản trị viên</span>
+                    </div>
+                </button>
             </div>
         </header>
 
@@ -1346,6 +1334,11 @@ function rentalApp() {
 
         getContractInvoices(maHopDong) {
             return this.invoices.filter(i => i.maHopDong == maHopDong);
+        },
+
+        getRoomIdFromContract(maHopDong) {
+            const contract = this.contracts.find(c => c.maHopDong == maHopDong);
+            return contract ? contract.maPhong : 'Không rõ';
         },
 
         // --- ROOMS CRUD ---
