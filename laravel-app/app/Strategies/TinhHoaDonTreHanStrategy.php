@@ -11,7 +11,7 @@ class TinhHoaDonTreHanStrategy implements TinhHoaDonStrategy
         $giaThue = $hopDong->giaThueThang;
         $dien = ($chiTietPhuPhi['dienMoi'] - $chiTietPhuPhi['dienCu']) * 4000;
         $nuoc = ($chiTietPhuPhi['nuocMoi'] - $chiTietPhuPhi['nuocCu']) * 30000;
-        $phiTreHan = 150000; // Phí phạt đóng muộn mặc định 150.000đ
+        $phiTreHan = 100000; // Phí phạt đóng muộn 100.000đ
 
         return $giaThue + max(0, $dien) + max(0, $nuoc) + $phiTreHan;
     }

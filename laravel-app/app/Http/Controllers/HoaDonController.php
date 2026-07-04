@@ -147,7 +147,7 @@ class HoaDonController extends Controller
         $hopDong = $hopDongService->find($request->maHopDong);
 
         $strategyType = $request->input('strategy', 'default');
-        if ($strategyType === 'late') {
+        if ($strategyType === 'late' || $strategyType === 'lateFee') {
             $strategy = new TinhHoaDonTreHanStrategy();
         } else {
             $strategy = new TinhHoaDonMacDinhStrategy();
