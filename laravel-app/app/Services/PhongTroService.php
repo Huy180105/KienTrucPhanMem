@@ -31,6 +31,12 @@ class PhongTroService
     public function delete($id)
     {
         $room = PhongTro::findOrFail($id);
+        
+        // Cascade delete: Xoá từng tài sản thuộc phòng này để kích hoạt Observer ghi logs lịch sử
+        foreach ($room->taiSans as $taiSan) {
+            $taiSan->delete();
+        }
+        
         return $room->delete();
     }
 
