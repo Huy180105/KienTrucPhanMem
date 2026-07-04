@@ -47,6 +47,21 @@ class HoaDonController extends Controller
                     if ($year > $currentYear || ($year === $currentYear && (int)$value > $currentMonth)) {
                         $fail('Kỳ hóa đơn (tháng/năm) không được vượt quá tháng/năm hiện tại.');
                     }
+
+                    // Check that billing period is within the contract period
+                    $hopDong = \App\Models\HopDong::find($request->input('maHopDong'));
+                    if ($hopDong) {
+                        $startDate = \Carbon\Carbon::parse($hopDong->ngayBatDau);
+                        $endDate = \Carbon\Carbon::parse($hopDong->ngayKetThuc);
+                        
+                        $startPeriod = $startDate->year * 12 + $startDate->month;
+                        $endPeriod = $endDate->year * 12 + $endDate->month;
+                        $billingPeriod = $year * 12 + (int)$value;
+                        
+                        if ($billingPeriod < $startPeriod || $billingPeriod > $endPeriod) {
+                            $fail('Kỳ hóa đơn phải nằm trong thời hạn hiệu lực của hợp đồng (từ ' . $startDate->format('d/m/Y') . ' đến ' . $endDate->format('d/m/Y') . ').');
+                        }
+                    }
                 }
             ],
             'nam' => 'required|integer|min:2020',
@@ -74,8 +89,12 @@ class HoaDonController extends Controller
 
     public function destroy($id)
     {
-        $this->service->delete($id);
-        return response()->json(['success' => true]);
+        try {
+            $this->service->delete($id);
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
     }
 
     public function search(Request $request)

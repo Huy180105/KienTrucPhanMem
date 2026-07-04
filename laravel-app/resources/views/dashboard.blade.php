@@ -712,7 +712,12 @@
                                                 <template x-if="invoice.trangThai === 'Chưa thanh toán'">
                                                     <button @click="payInvoice(invoice.maHD)" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition">Thanh toán</button>
                                                 </template>
-                                                <button @click="deleteInvoice(invoice.maHD)" class="p-1 hover:bg-rose-50 text-rose-600 rounded transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                                <button @click="deleteInvoice(invoice.maHD)" 
+                                                        :class="invoice.trangThai === 'Chưa thanh toán' ? 'opacity-35 cursor-not-allowed text-slate-400' : 'hover:bg-rose-50 text-rose-600'" 
+                                                        class="p-1 rounded transition" 
+                                                        :title="invoice.trangThai === 'Chưa thanh toán' ? 'Không thể xóa hóa đơn chưa thanh toán' : 'Xóa hóa đơn'">
+                                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -1695,6 +1700,22 @@ function rentalApp() {
                 return;
             }
 
+            // 3. Check billing period must be within contract duration
+            const contract = this.contracts.find(c => c.maHopDong == form.maHopDong);
+            if (contract) {
+                const startDate = new Date(contract.ngayBatDau);
+                const endDate = new Date(contract.ngayKetThuc);
+                
+                const startPeriod = startDate.getFullYear() * 12 + (startDate.getMonth() + 1);
+                const endPeriod = endDate.getFullYear() * 12 + (endDate.getMonth() + 1);
+                const billingPeriod = parseInt(form.nam) * 12 + parseInt(form.thang);
+                
+                if (billingPeriod < startPeriod || billingPeriod > endPeriod) {
+                    alert(`Lỗi: Kỳ hóa đơn (Tháng ${form.thang}/${form.nam}) phải nằm trong thời hạn hiệu lực của hợp đồng (từ ${this.formatDate(contract.ngayBatDau)} đến ${this.formatDate(contract.ngayKetThuc)}).`);
+                    return;
+                }
+            }
+
             axios.post('/api/invoices', this.invoiceForm)
                 .then(res => {
                     this.fetchInvoices();
@@ -1715,6 +1736,11 @@ function rentalApp() {
 
         deleteInvoice(maHD) {
             if (!this.checkAdminPermission()) return;
+            const invoice = this.invoices.find(i => i.maHD === maHD);
+            if (invoice && invoice.trangThai === 'Chưa thanh toán') {
+                alert('Lỗi bảo mật: Không được phép xóa hóa đơn chưa thanh toán. Vui lòng thanh toán trước.');
+                return;
+            }
             if (confirm('Xóa hóa đơn này?')) {
                 axios.delete('/api/invoices/' + maHD)
                     .then(() => {

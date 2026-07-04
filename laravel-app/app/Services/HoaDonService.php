@@ -31,6 +31,9 @@ class HoaDonService
     public function delete($id)
     {
         $invoice = HoaDon::findOrFail($id);
+        if ($invoice->trangThai === 'Chưa thanh toán') {
+            throw new \Exception('Không thể xóa hóa đơn chưa thanh toán. Vui lòng thanh toán trước khi xóa.');
+        }
         return $invoice->delete();
     }
 
