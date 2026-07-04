@@ -335,14 +335,24 @@
                         <div @click="selectRoom(room)" 
                              class="bg-white border border-slate-200 hover:border-indigo-400 rounded-2xl p-5 shadow-sm hover:shadow-md cursor-pointer transition-all duration-200 group flex flex-col justify-between relative overflow-hidden"
                              :class="selectedRoom && selectedRoom.maPhong === room.maPhong ? 'ring-2 ring-indigo-500 border-transparent bg-indigo-50/20' : ''">
-                            
-                            <div>
+                             
+                             <!-- Direct Edit/Delete Buttons (Hover visible) -->
+                             <div class="absolute right-3 top-3 flex gap-1 opacity-0 group-hover:opacity-100 transition duration-150 z-20">
+                                 <button @click.stop="openEditRoom(room)" class="p-1.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-slate-500 hover:text-indigo-600 transition shadow-sm" title="Chỉnh sửa">
+                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                                 </button>
+                                 <button @click.stop="deleteRoom(room.maPhong)" class="p-1.5 bg-white hover:bg-rose-50 border border-slate-200 rounded-lg text-slate-500 hover:text-rose-600 transition shadow-sm" title="Xóa phòng">
+                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                                 </button>
+                             </div>
+
+                             <div>
                                 <div class="flex justify-between items-start mb-4">
                                     <div class="p-3 bg-slate-50 group-hover:bg-indigo-50 text-slate-600 group-hover:text-indigo-600 rounded-xl transition duration-150">
                                         <i data-lucide="key" class="w-5 h-5"></i>
                                     </div>
                                     <span :class="getRoomStatusClass(room.trangThai)" 
-                                          class="px-2.5 py-0.5 rounded-full text-xs font-bold" 
+                                          class="px-2.5 py-0.5 rounded-full text-xs font-bold transition duration-155 group-hover:opacity-0" 
                                           x-text="room.trangThai"></span>
                                 </div>
                                 <h4 class="text-base font-extrabold text-slate-800 mb-1" x-text="room.tenPhong"></h4>
