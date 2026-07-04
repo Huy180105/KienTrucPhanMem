@@ -1092,10 +1092,18 @@
                             <option value="Tốt">Tốt</option>
                             <option value="Cũ">Cũ</option>
                             <option value="Hỏng">Hỏng</option>
-                                <option :value="room.maPhong" x-text="room.tenPhong"></option>
-                            </template>
                         </select>
                     </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Vị Trí (Phòng)</label>
+                    <select x-model="assetForm.maPhong" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
+                        <option value="">Chưa phân bổ (Để trống)</option>
+                        <template x-for="room in rooms" :key="room.maPhong">
+                            <option :value="room.maPhong" x-text="room.tenPhong"></option>
+                        </template>
+                    </select>
+                </div>
                 <div class="pt-4 border-t border-slate-100 flex justify-end gap-2">
                     <button type="button" @click="showAssetModal = false" class="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 transition">Hủy</button>
                     <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition">Lưu lại</button>
