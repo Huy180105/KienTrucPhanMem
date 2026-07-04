@@ -1714,6 +1714,20 @@ function rentalApp() {
                     alert(`Lỗi: Kỳ hóa đơn (Tháng ${form.thang}/${form.nam}) phải nằm trong thời hạn hiệu lực của hợp đồng (từ ${this.formatDate(contract.ngayBatDau)} đến ${this.formatDate(contract.ngayKetThuc)}).`);
                     return;
                 }
+
+                // 4. Check duplicate billing for the same room in the same month/year
+                const roomId = contract.maPhong;
+                const duplicate = this.invoices.find(i => {
+                    const existingContract = this.contracts.find(c => c.maHopDong == i.maHopDong);
+                    return existingContract && 
+                           existingContract.maPhong === roomId && 
+                           i.thang == form.thang && 
+                           i.nam == form.nam;
+                });
+                if (duplicate) {
+                    alert(`Lỗi: Phòng ${roomId} đã được lập hóa đơn cho kỳ tháng ${form.thang}/${form.nam} rồi (Mã hóa đơn: HD${duplicate.maHD}). Không thể tạo thêm.`);
+                    return;
+                }
             }
 
             axios.post('/api/invoices', this.invoiceForm)

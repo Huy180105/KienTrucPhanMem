@@ -60,6 +60,20 @@ class HoaDonController extends Controller
                         
                         if ($billingPeriod < $startPeriod || $billingPeriod > $endPeriod) {
                             $fail('Kỳ hóa đơn phải nằm trong thời hạn hiệu lực của hợp đồng (từ ' . $startDate->format('d/m/Y') . ' đến ' . $endDate->format('d/m/Y') . ').');
+                            return;
+                        }
+
+                        // Check duplicate invoice for the same room in the same month/year
+                        $roomId = $hopDong->maPhong;
+                        $exists = \App\Models\HoaDon::where('thang', (int)$value)
+                            ->where('nam', $year)
+                            ->whereHas('hopDong', function ($q) use ($roomId) {
+                                $q->where('maPhong', $roomId);
+                            })
+                            ->exists();
+                            
+                        if ($exists) {
+                            $fail('Phòng này đã được lập hóa đơn cho kỳ tháng ' . $value . '/' . $year . ' rồi.');
                         }
                     }
                 }
