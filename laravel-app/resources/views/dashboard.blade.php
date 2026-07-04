@@ -1102,15 +1102,15 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Điện mới - cũ (kWh)</label>
                         <div class="flex gap-1 items-center">
-                            <input type="number" x-model.number="invoiceForm.dienCu" placeholder="Cũ" required class="w-1/2 px-2 py-1.5 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500/20">
                             <input type="number" x-model.number="invoiceForm.dienMoi" placeholder="Mới" required @input="calculateTotal()" class="w-1/2 px-2 py-1.5 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500/20">
+                            <input type="number" x-model.number="invoiceForm.dienCu" placeholder="Cũ" required @input="calculateTotal()" class="w-1/2 px-2 py-1.5 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500/20">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nước mới - cũ (m³)</label>
                         <div class="flex gap-1 items-center">
-                            <input type="number" x-model.number="invoiceForm.nuocCu" placeholder="Cũ" required class="w-1/2 px-2 py-1.5 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500/20">
                             <input type="number" x-model.number="invoiceForm.nuocMoi" placeholder="Mới" required @input="calculateTotal()" class="w-1/2 px-2 py-1.5 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500/20">
+                            <input type="number" x-model.number="invoiceForm.nuocCu" placeholder="Cũ" required @input="calculateTotal()" class="w-1/2 px-2 py-1.5 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500/20">
                         </div>
                     </div>
                 </div>
