@@ -137,19 +137,34 @@
                 </div>
 
                 <!-- Profile summary (Interactive role toggler - NFR-03) -->
-                <button @click="userRole = (userRole === 'admin' ? 'viewer' : 'admin'); changeRole()" 
-                        class="flex items-center gap-2 pl-4 border-l border-slate-200 focus:outline-none hover:opacity-80 transition group"
-                        title="Click để chuyển đổi vai trò (NFR-03)">
-                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-sm transition"
-                         :class="userRole === 'admin' ? 'bg-indigo-50 text-indigo-600' : 'bg-amber-50 text-amber-600'"
-                         x-text="userRole === 'admin' ? 'AD' : 'KS'">
-                        AD
-                    </div>
-                    <div class="text-left">
-                        <span class="text-xs font-bold block text-slate-800" x-text="userRole === 'admin' ? 'Administrator' : 'Khách Xem'">Administrator</span>
-                        <span class="text-[9px] text-slate-400 font-medium block" x-text="userRole === 'admin' ? 'Quyền: Quản trị viên' : 'Quyền: Chỉ xem'">Quyền: Quản trị viên</span>
-                    </div>
-                </button>
+                <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
+                    <button @click="userRole = (userRole === 'admin' ? 'viewer' : 'admin'); changeRole()" 
+                            class="flex items-center gap-2 focus:outline-none hover:opacity-80 transition group"
+                            title="Click để chuyển đổi vai trò (NFR-03)">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-sm transition"
+                             :class="userRole === 'admin' ? 'bg-indigo-50 text-indigo-600' : 'bg-amber-50 text-amber-600'"
+                             x-text="userRole === 'admin' ? 'AD' : 'KS'">
+                            AD
+                        </div>
+                        <div class="text-left">
+                            <span class="text-xs font-bold block text-slate-800">{{ Auth::user()->name ?? 'Admin' }}</span>
+                            <span class="text-[9px] text-slate-400 font-medium block" x-text="userRole === 'admin' ? 'Quyền: Quản trị viên' : 'Quyền: Chỉ xem'">Quyền: Quản trị viên</span>
+                        </div>
+                    </button>
+
+                    <!-- Logout button -->
+                    <form method="POST" action="/logout" style="display:inline;">
+                        @csrf
+                        <button type="submit" 
+                                title="Đăng xuất"
+                                style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;color:#e11d48;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit;"
+                                onmouseover="this.style.background='#ffe4e6'"
+                                onmouseout="this.style.background='#fff1f2'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                            Đăng xuất
+                        </button>
+                    </form>
+                </div>
             </div>
         </header>
 
