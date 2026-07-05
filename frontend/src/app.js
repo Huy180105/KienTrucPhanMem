@@ -675,3 +675,32 @@ window.rentalApp = function() {
         }
     }
 };
+
+window.loginForm = function() {
+    return {
+        email: '',
+        password: '',
+        remember: false,
+        showPassword: false,
+        errorMessage: '',
+        submitLogin() {
+            this.errorMessage = '';
+            axios.post('/api/login', {
+                email: this.email,
+                password: this.password,
+                remember: this.remember
+            })
+            .then(res => {
+                if (res.data.success) {
+                    window.location.href = '/index.html';
+                }
+            })
+            .catch(err => {
+                this.errorMessage = err.response?.data?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại.';
+            });
+        }
+    }
+};
+
+Alpine.start();
+
