@@ -62,7 +62,6 @@ window.rentalApp = function() {
         showAssetModal: false,
         isEditingAsset: false,
         assetForm: { maTaiSan: null, tenTaiSan: '', soLuong: 1, tinhTrang: 'Tốt', maPhong: '' },
-
         // Initialization
         initApp() {
             // Check authentication
@@ -80,6 +79,13 @@ window.rentalApp = function() {
                         this.fetchInvoices();
                         this.fetchAssets();
                         this.fetchAssetLogs();
+
+                        // Call icon creation on initial load after container becomes visible
+                        this.$nextTick(() => {
+                            if (window.lucide) {
+                                window.lucide.createIcons();
+                            }
+                        });
                     } else {
                         window.location.href = '/login.html';
                     }
@@ -88,7 +94,16 @@ window.rentalApp = function() {
                     window.location.href = '/login.html';
                 });
 
-            // Render Lucide icons when Alpine DOM updates
+            // Watch for tab changes and render icons dynamically
+            this.$watch('activeTab', () => {
+                this.$nextTick(() => {
+                    if (window.lucide) {
+                        window.lucide.createIcons();
+                    }
+                });
+            });
+
+            // Render Lucide icons when Alpine DOM updates initially
             this.$nextTick(() => {
                 if (window.lucide) {
                     window.lucide.createIcons();
