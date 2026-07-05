@@ -7,14 +7,6 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    public function loginPage()
-    {
-        if (Auth::check()) {
-            return redirect('/');
-        }
-        return view('login');
-    }
-
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -24,12 +16,23 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended('/');
+            $user = Auth::user();
+            return response()->json([
+                'success' => true,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => 'admin', // Default role for authenticated user
+                ],
+                'message' => 'Đăng nhập thành công!'
+            ]);
         }
 
-        return back()->withErrors([
-            'email' => 'Email hoặc mật khẩu không đúng.',
-        ])->withInput($request->only('email'));
+        return response()->json([
+            'success' => false,
+            'message' => 'Email hoặc mật khẩu không đúng.'
+        ], 401);
     }
 
     public function logout(Request $request)
@@ -37,6 +40,30 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/login');
+        return response()->json([
+            'success' => true,
+            'message' => 'Đăng xuất thành công!'
+        ]);
+    }
+
+    public function user(Request $request)
+    {
+        $user = Auth::user();
+        if ($user) {
+            return response()->json([
+                'success' => true,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => 'admin',
+                ]
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Chưa đăng nhập.'
+        ], 401);
     }
 }

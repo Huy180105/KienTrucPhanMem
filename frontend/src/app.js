@@ -1,8 +1,17 @@
-<!-- ==================== RENTAL APP ENGINE (ALPINE JS) ==================== -->
-<script>
-function rentalApp() {
+import Alpine from 'alpinejs';
+import axios from 'axios';
+
+window.Alpine = Alpine;
+window.axios = axios;
+
+// Configure Axios defaults
+axios.defaults.withCredentials = true;
+
+// Setup Alpine JS App
+window.rentalApp = function() {
     return {
-        // Role system & logs (NFR-03 & NFR-02)
+        // Auth state
+        currentUser: null,
         userRole: 'admin',
         assetLogs: [],
 
@@ -56,26 +65,34 @@ function rentalApp() {
 
         // Initialization
         initApp() {
-            // Configure Axios CSRF header automatically
-            const tokenMeta = document.querySelector('meta[name="csrf-token"]');
-            if (tokenMeta) {
-                axios.defaults.headers.common['X-CSRF-TOKEN'] = tokenMeta.getAttribute('content');
-            }
+            // Check authentication
+            axios.get('/api/user')
+                .then(res => {
+                    if (res.data.success) {
+                        this.currentUser = res.data.user;
+                        this.userRole = res.data.user.role || 'admin';
+                        axios.defaults.headers.common['X-User-Role'] = this.userRole;
 
-            // Configure Axios X-User-Role header automatically (NFR-03)
-            axios.defaults.headers.common['X-User-Role'] = this.userRole;
+                        // Load data
+                        this.fetchRooms();
+                        this.fetchTenants();
+                        this.fetchContracts();
+                        this.fetchInvoices();
+                        this.fetchAssets();
+                        this.fetchAssetLogs();
+                    } else {
+                        window.location.href = '/login.html';
+                    }
+                })
+                .catch(() => {
+                    window.location.href = '/login.html';
+                });
 
-            // Load all database entities from backend
-            this.fetchRooms();
-            this.fetchTenants();
-            this.fetchContracts();
-            this.fetchInvoices();
-            this.fetchAssets();
-            this.fetchAssetLogs();
-
-            // Render Lucide icons when window finishes initializing
+            // Render Lucide icons when Alpine DOM updates
             this.$nextTick(() => {
-                lucide.createIcons();
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
             });
         },
 
@@ -84,7 +101,6 @@ function rentalApp() {
             axios.get('/api/rooms')
                 .then(res => { 
                     this.rooms = res.data; 
-                    // Refresh selected room if it was open
                     if (this.selectedRoom) {
                         const updated = this.rooms.find(r => r.maPhong === this.selectedRoom.maPhong);
                         if (updated) this.selectedRoom = updated;
@@ -126,6 +142,17 @@ function rentalApp() {
                 return false;
             }
             return true;
+        },
+
+        logoutUser() {
+            axios.post('/api/logout')
+                .then(() => {
+                    window.location.href = '/login.html';
+                })
+                .catch(err => {
+                    console.error('Lỗi đăng xuất:', err);
+                    window.location.href = '/login.html';
+                });
         },
 
         // Helper: Formatting Currency
@@ -353,7 +380,7 @@ function rentalApp() {
             this.openAddContract();
             this.contractForm.maPhong = roomId;
             this.contractForm.giaThueThang = roomPrice;
-            this.contractForm.tienCoc = roomPrice; // Mặc định đặt cọc bằng 1 tháng tiền phòng
+            this.contractForm.tienCoc = roomPrice; 
         },
 
         saveContract() {
@@ -399,7 +426,6 @@ function rentalApp() {
             }
             const targetEmail = tenant.email || 'nguyenvana@gmail.com';
             
-            // Show loading status on clicked button
             const btn = event.currentTarget;
             const originalText = btn.innerHTML;
             btn.disabled = true;
@@ -459,12 +485,10 @@ function rentalApp() {
             }
         },
 
-        // Design Pattern: Strategy Implementation for calculation calling backend
         calculateTotal() {
             const form = this.invoiceForm;
             if (!form.maHopDong) return;
 
-            // Simple validation check before sending API to avoid console error logs
             if (form.dienMoi < form.dienCu || form.nuocMoi < form.nuocCu) {
                 form.tongTien = form.baseRent;
                 return;
@@ -491,7 +515,6 @@ function rentalApp() {
 
             const form = this.invoiceForm;
 
-            // 1. Check new readings vs old readings
             if (form.dienMoi < form.dienCu) {
                 alert('Lỗi: Số điện mới phải lớn hơn hoặc bằng số điện cũ.');
                 return;
@@ -501,7 +524,6 @@ function rentalApp() {
                 return;
             }
 
-            // 2. Check billing period must be <= today's month/year
             const today = new Date();
             const currentYear = today.getFullYear();
             const currentMonth = today.getMonth() + 1;
@@ -511,7 +533,6 @@ function rentalApp() {
                 return;
             }
 
-            // 3. Check billing period must be within contract duration
             const contract = this.contracts.find(c => c.maHopDong == form.maHopDong);
             if (contract) {
                 const startDate = new Date(contract.ngayBatDau);
@@ -526,7 +547,6 @@ function rentalApp() {
                     return;
                 }
 
-                // 4. Check duplicate billing for the same room in the same month/year
                 const roomId = contract.maPhong;
                 const duplicate = this.invoices.find(i => {
                     const existingContract = this.contracts.find(c => c.maHopDong == i.maHopDong);
@@ -654,5 +674,4 @@ function rentalApp() {
             }
         }
     }
-}
-</script>
+};
