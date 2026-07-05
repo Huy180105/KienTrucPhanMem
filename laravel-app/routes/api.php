@@ -9,10 +9,15 @@ use App\Http\Controllers\TaiSanController;
 use App\Http\Controllers\ContractMailController;
 use App\Http\Controllers\AuthController;
 
-// Auth APIs
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout']);
-Route::get('/user', [AuthController::class, 'user']);
+// Auth APIs (Requires Session middleware to authenticate)
+Route::middleware([
+    \Illuminate\Session\Middleware\StartSession::class,
+])->group(function () {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', [AuthController::class, 'user']);
+});
+
 
 
 // 1. API Danh Sách Phòng
