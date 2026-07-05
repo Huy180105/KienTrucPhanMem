@@ -1,0 +1,69 @@
+<!-- 4. TAB: QUẢN LÝ HỢP ĐỒNG -->
+<div x-show="activeTab === 'contracts'" x-transition class="space-y-6">
+    <!-- Toolbar -->
+    <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <div class="flex items-center gap-4">
+            <span class="text-xs font-bold text-slate-450 uppercase">Hiệu lực:</span>
+            <div class="flex gap-2">
+                <button @click="contractFilter = 'all'" :class="contractFilter === 'all' ? 'bg-slate-800 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'" class="px-3 py-1 rounded-lg text-xs font-bold transition">Tất cả</button>
+                <button @click="contractFilter = 'active'" :class="contractFilter === 'active' ? 'bg-slate-800 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'" class="px-3 py-1 rounded-lg text-xs font-bold transition">Đang hiệu lực</button>
+                <button @click="contractFilter = 'terminated'" :class="contractFilter === 'terminated' ? 'bg-slate-800 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'" class="px-3 py-1 rounded-lg text-xs font-bold transition">Đã thanh lý</button>
+            </div>
+        </div>
+        <button @click="openAddContract()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-indigo-600/10 transition">
+            <i data-lucide="file-plus" class="w-4 h-4"></i> Lập hợp đồng
+        </button>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-slate-100 bg-slate-50 text-slate-400 text-xs font-bold uppercase">
+                        <th class="py-3 px-6">Mã HĐ</th>
+                        <th class="py-3 px-6">Phòng</th>
+                        <th class="py-3 px-6">Khách Thuê</th>
+                        <th class="py-3 px-6">Ngày Lập</th>
+                        <th class="py-3 px-6">Ngày Bắt Đầu</th>
+                        <th class="py-3 px-6">Ngày Kết Thúc</th>
+                        <th class="py-3 px-6">Tiền Cọc</th>
+                        <th class="py-3 px-6">Đơn Giá</th>
+                        <th class="py-3 px-6">Trạng Thái</th>
+                        <th class="py-3 px-6 text-center">Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                    <template x-for="contract in filteredContracts()" :key="contract.maHopDong">
+                        <tr class="hover:bg-slate-50/50 transition">
+                            <td class="py-4 px-6 font-bold text-slate-800" x-text="contract.maHopDong"></td>
+                            <td class="py-4 px-6 font-bold text-indigo-600" x-text="contract.maPhong"></td>
+                            <td class="py-4 px-6 font-semibold text-slate-800" x-text="getTenantName(contract.maKhach)"></td>
+                            <td class="py-4 px-6" x-text="formatDate(contract.ngayLap)"></td>
+                            <td class="py-4 px-6" x-text="formatDate(contract.ngayBatDau)"></td>
+                            <td class="py-4 px-6" x-text="formatDate(contract.ngayKetThuc)"></td>
+                            <td class="py-4 px-6 font-semibold text-emerald-600" x-text="formatCurrency(contract.tienCoc)"></td>
+                            <td class="py-4 px-6 font-bold text-slate-800" x-text="formatCurrency(contract.giaThueThang)"></td>
+                            <td class="py-4 px-6">
+                                <span :class="contract.trangThai === 'Đang hiệu lực' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'" 
+                                      class="px-2.5 py-0.5 rounded-full text-xs font-bold" 
+                                      x-text="contract.trangThai"></span>
+                            </td>
+                            <td class="py-4 px-6">
+                                <div class="flex justify-center gap-2">
+                                    <template x-if="contract.trangThai === 'Đang hiệu lực'">
+                                        <div class="flex gap-1">
+                                            <button @click="sendEmailReminder(contract, $event)" class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-650 rounded-lg text-xs font-bold transition">Gửi Mail</button>
+                                            <button @click="terminateContract(contract.maHopDong)" class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition">Thanh lý</button>
+                                        </div>
+                                    </template>
+                                    <button @click="deleteContract(contract.maHopDong)" class="p-1 hover:bg-rose-50 text-rose-600 rounded transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
