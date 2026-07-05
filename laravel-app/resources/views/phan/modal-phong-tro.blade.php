@@ -1,0 +1,100 @@
+﻿    <!-- ==================== MODALS SYSTEM ==================== -->
+    
+    <!-- 1. MODAL: PHÒNG (ROOM) -->
+    <div x-show="showRoomModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" x-transition>
+        <div @click.away="showRoomModal = false" 
+             :class="isEditingRoom ? 'max-w-lg' : 'max-w-md'"
+             class="bg-white rounded-2xl w-full overflow-hidden shadow-2xl border border-slate-100 flex flex-col transition-all duration-300">
+            <div class="h-14 bg-slate-900 px-6 flex justify-between items-center text-white">
+                <h4 class="font-bold text-sm uppercase tracking-wide" x-text="isEditingRoom ? 'Cập nhật phòng trọ' : 'Thêm phòng trọ mới'"></h4 >
+                <button @click="showRoomModal = false" class="text-slate-400 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form @submit.prevent="saveRoom()" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mã Phòng</label>
+                    <input type="text" x-model="roomForm.maPhong" :disabled="isEditingRoom" placeholder="Ví dụ: P105" required
+                           class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:bg-slate-100">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Tên Phòng</label>
+                    <input type="text" x-model="roomForm.tenPhong" placeholder="Ví dụ: Phòng 105" required
+                           class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Tầng</label>
+                        <input type="number" x-model.number="roomForm.tang" placeholder="1" required min="1"
+                               class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Đơn Giá Thuê</label>
+                        <input type="number" x-model.number="roomForm.giaPhong" placeholder="3000000" required min="0"
+                               class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Trạng Thái</label>
+                    <select x-model="roomForm.trangThai" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
+                        <option value="Trống">Trống</option>
+                        <option value="Đã thuê">Đã thuê</option>
+                        <option value="Đang bảo trì">Đang bảo trì</option>
+                    </select>
+                </div>
+
+                <!-- Cascade / inline asset list when editing (NFR-02 & User request) -->
+                <template x-if="isEditingRoom">
+                    <div class="border-t border-slate-100 pt-4 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-xs font-bold text-slate-700 uppercase">Danh Sách Tài Sản Trong Phòng</label>
+                            <span class="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full font-bold" x-text="assets.filter(a => a.maPhong === roomForm.maPhong).length + ' tài sản'"></span>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-100 rounded-xl overflow-hidden max-h-[180px] overflow-y-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-slate-100/80 border-b border-slate-200 text-slate-500 font-bold uppercase text-[9px]">
+                                        <th class="py-2 px-3">Tên Tài Sản</th>
+                                        <th class="py-2 px-3 w-16 text-center">SL</th>
+                                        <th class="py-2 px-3 w-24">Tình Trạng</th>
+                                        <th class="py-2 px-3 text-center w-12">Xóa</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-slate-600">
+                                    <template x-for="asset in assets.filter(a => a.maPhong === roomForm.maPhong)" :key="asset.maTaiSan">
+                                        <tr class="hover:bg-slate-100/30 bg-white transition">
+                                            <td class="py-2 px-3 font-semibold text-slate-800" x-text="asset.tenTaiSan"></td>
+                                            <td class="py-2 px-3 text-center">
+                                                <input type="number" x-model.number="asset.soLuong" @change="axios.put('/api/assets/' + asset.maTaiSan, asset).then(() => { fetchAssets(); fetchAssetLogs(); })" class="w-12 border border-slate-200 rounded px-1 py-0.5 text-center focus:outline-none focus:ring-1 focus:ring-indigo-500 font-bold">
+                                            </td>
+                                            <td class="py-2 px-3">
+                                                <select x-model="asset.tinhTrang" @change="axios.put('/api/assets/' + asset.maTaiSan, asset).then(() => { fetchAssets(); fetchAssetLogs(); })" class="w-full bg-slate-50 border border-slate-200 rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                                    <option value="Tốt">Tốt</option>
+                                                    <option value="Cũ">Cũ</option>
+                                                    <option value="Hỏng">Hỏng</option>
+                                                </select>
+                                            </td>
+                                            <td class="py-2 px-3 text-center">
+                                                <button type="button" @click="if(confirm('Bạn có chắc muốn xóa tài sản này?')) { axios.delete('/api/assets/' + asset.maTaiSan).then(() => { fetchAssets(); fetchAssetLogs(); }) }" class="text-rose-600 hover:text-rose-800 transition">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                    <template x-if="assets.filter(a => a.maPhong === roomForm.maPhong).length === 0">
+                                        <tr>
+                                            <td colspan="4" class="py-4 text-center text-slate-400 italic">Không có tài sản nào trong phòng này.</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </template>
+
+                <div class="pt-4 border-t border-slate-100 flex justify-end gap-2">
+                    <button type="button" @click="showRoomModal = false" class="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 transition">Hủy bỏ</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition">Lưu lại</button>
+                </div>
+            </form>
+        </div>
+    </div>
+

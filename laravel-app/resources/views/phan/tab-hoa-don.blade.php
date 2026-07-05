@@ -1,0 +1,71 @@
+﻿            <!-- 5. TAB: QUẢN LÝ HÓA ĐƠN -->
+            <div x-show="activeTab === 'invoices'" x-transition class="space-y-6">
+                <!-- Toolbar -->
+                <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center gap-4">
+                        <span class="text-xs font-bold text-slate-450 uppercase">Thanh toán:</span>
+                        <div class="flex gap-2">
+                            <button @click="invoiceFilter = 'all'" :class="invoiceFilter === 'all' ? 'bg-slate-800 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'" class="px-3 py-1 rounded-lg text-xs font-bold transition">Tất cả</button>
+                            <button @click="invoiceFilter = 'unpaid'" :class="invoiceFilter === 'unpaid' ? 'bg-slate-800 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'" class="px-3 py-1 rounded-lg text-xs font-bold transition">Chưa thanh toán</button>
+                            <button @click="invoiceFilter = 'paid'" :class="invoiceFilter === 'paid' ? 'bg-slate-800 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'" class="px-3 py-1 rounded-lg text-xs font-bold transition">Đã thanh toán</button>
+                        </div>
+                    </div>
+                    <button @click="openAddInvoice()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-indigo-600/10 transition">
+                        <i data-lucide="calculator" class="w-4 h-4"></i> Tính hóa đơn
+                    </button>
+                </div>
+
+                <!-- Table -->
+                <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 bg-slate-50 text-slate-400 text-xs font-bold uppercase">
+                                    <th class="py-3 px-6">Mã Hóa Đơn</th>
+                                    <th class="py-3 px-6">Phòng</th>
+                                    <th class="py-3 px-6">Kỳ Hóa Đơn</th>
+                                    <th class="py-3 px-6">Ngày Lập</th>
+                                    <th class="py-3 px-6">Tổng Số Tiền</th>
+                                    <th class="py-3 px-6">Trạng Thái</th>
+                                    <th class="py-3 px-6 text-center">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                                <template x-for="invoice in filteredInvoices()" :key="invoice.maHD">
+                                    <tr class="hover:bg-slate-50/50 transition">
+                                        <td class="py-4 px-6 font-bold text-slate-800" x-text="'HD' + invoice.maHD"></td>
+                                        <td class="py-4 px-6 font-bold text-indigo-600" x-text="getRoomIdFromContract(invoice.maHopDong)"></td>
+                                        <td class="py-4 px-6 font-semibold text-slate-800" x-text="'Tháng ' + invoice.thang + '/' + invoice.nam"></td>
+                                        <td class="py-4 px-6" x-text="formatDate(invoice.ngayLap)"></td>
+                                        <td class="py-4 px-6 font-bold text-slate-800" x-text="formatCurrency(invoice.tongTien)"></td>
+                                        <td class="py-4 px-6">
+                                            <span :class="invoice.trangThai === 'Đã thanh toán' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'" 
+                                                  class="px-2.5 py-0.5 rounded-full text-xs font-bold" 
+                                                  x-text="invoice.trangThai"></span>
+                                        </td>
+                                        <td class="py-4 px-6">
+                                            <div class="flex justify-center gap-2">
+                                                <template x-if="invoice.trangThai === 'Chưa thanh toán'">
+                                                    <button @click="payInvoice(invoice.maHD)" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition">Thanh toán</button>
+                                                </template>
+                                                <button @click="sendInvoiceEmail(invoice.maHD, $event)" 
+                                                        class="p-1.5 hover:bg-indigo-50 text-indigo-600 rounded-lg transition" 
+                                                        title="Gửi Email Hóa Đơn">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                                </button>
+                                                <button @click="deleteInvoice(invoice.maHD)" 
+                                                        :class="invoice.trangThai === 'Chưa thanh toán' ? 'opacity-35 cursor-not-allowed text-slate-400' : 'hover:bg-rose-50 text-rose-600'" 
+                                                        class="p-1.5 rounded-lg transition" 
+                                                        :title="invoice.trangThai === 'Chưa thanh toán' ? 'Không thể xóa hóa đơn chưa thanh toán' : 'Xóa hóa đơn'">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
