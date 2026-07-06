@@ -378,6 +378,9 @@ window.rentalApp = function() {
                     .then(res => {
                         this.fetchTenants();
                         this.showTenantModal = false;
+                        const newTenant = res.data;
+                        alert(`Thêm khách thuê "${newTenant.hoTen}" thành công! Bạn cần lập hợp đồng thuê phòng cho khách mới này.`);
+                        this.openAddContractForTenant(newTenant.maKhach);
                     })
                     .catch(err => alert('Lỗi thêm khách thuê: ' + (err.response?.data?.message || err.message)));
             }
@@ -415,6 +418,12 @@ window.rentalApp = function() {
             this.contractForm.maPhong = roomId;
             this.contractForm.giaThueThang = roomPrice;
             this.contractForm.tienCoc = roomPrice; 
+        },
+
+        openAddContractForTenant(tenantId) {
+            this.openAddContract();
+            this.contractForm.maKhach = tenantId;
+            this.activeTab = 'contracts';
         },
 
         saveContract() {
