@@ -84,6 +84,20 @@ class KhachThueController extends Controller
 
     public function destroy($id)
     {
+        // Kiểm duyệt nghiệp vụ: Kiểm tra xem khách thuê có hợp đồng nào còn hóa đơn chưa thanh toán hay không
+        $unpaidInvoice = \DB::table('hop_dongs')
+            ->join('hoa_dons', 'hop_dongs.maHopDong', '=', 'hoa_dons.maHopDong')
+            ->where('hop_dongs.maKhach', $id)
+            ->where('hoa_dons.trangThai', 'Chưa thanh toán')
+            ->select('hoa_dons.thang', 'hoa_dons.nam', 'hop_dongs.maPhong')
+            ->first();
+
+        if ($unpaidInvoice) {
+            return response()->json([
+                'message' => "Không thể xóa khách thuê này vì họ còn hóa đơn chưa thanh toán (Phòng {$unpaidInvoice->maPhong}, kỳ tháng {$unpaidInvoice->thang}/{$unpaidInvoice->nam}). Vui lòng thanh toán hóa đơn trước khi xóa."
+            ], 400);
+        }
+
         $this->service->delete($id);
         return response()->json(['success' => true]);
     }

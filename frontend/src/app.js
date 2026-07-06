@@ -388,6 +388,30 @@ window.rentalApp = function() {
 
         deleteTenant(maKhach) {
             if (!this.checkAdminPermission()) return;
+
+            // 1. Kiểm tra tất cả hợp đồng của khách thuê này
+            const tenantContracts = this.contracts.filter(c => c.maKhach == maKhach);
+            
+            // 2. Tìm xem có hóa đơn nào chưa thanh toán trong các hợp đồng đó hay không
+            let unpaidInvoice = null;
+            for (const contract of tenantContracts) {
+                const unpaid = this.invoices.find(i => i.maHopDong == contract.maHopDong && i.trangThai === 'Chưa thanh toán');
+                if (unpaid) {
+                    unpaidInvoice = {
+                        thang: unpaid.thang,
+                        nam: unpaid.nam,
+                        maPhong: contract.maPhong
+                    };
+                    break;
+                }
+            }
+
+            // 3. Nếu phát hiện có hóa đơn chưa thanh toán, chặn hành động xóa
+            if (unpaidInvoice) {
+                alert(`Không thể xóa khách thuê này vì họ còn hóa đơn chưa thanh toán (Phòng ${unpaidInvoice.maPhong}, kỳ tháng ${unpaidInvoice.thang}/${unpaidInvoice.nam}). Vui lòng thanh toán hóa đơn trước khi xóa.`);
+                return;
+            }
+
             if (confirm('Bạn có chắc muốn xóa thông tin khách thuê này?')) {
                 axios.delete('/api/tenants/' + maKhach)
                     .then(() => {
