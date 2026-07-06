@@ -416,6 +416,8 @@ window.rentalApp = function() {
                 axios.delete('/api/tenants/' + maKhach)
                     .then(() => {
                         this.fetchTenants();
+                        this.fetchContracts();
+                        this.fetchRooms();
                     })
                     .catch(err => alert('Lỗi xóa khách thuê: ' + (err.response?.data?.message || err.message)));
             }

@@ -98,6 +98,16 @@ class KhachThueController extends Controller
             ], 400);
         }
 
+        // Tự động trả trạng thái các phòng liên quan về 'Trống' trước khi hợp đồng bị cascade delete
+        $activeContracts = \App\Models\HopDong::where('maKhach', $id)
+            ->where('trangThai', 'Đang hiệu lực')
+            ->get();
+            
+        foreach ($activeContracts as $contract) {
+            \App\Models\PhongTro::where('maPhong', $contract->maPhong)
+                ->update(['trangThai' => 'Trống']);
+        }
+
         $this->service->delete($id);
         return response()->json(['success' => true]);
     }
