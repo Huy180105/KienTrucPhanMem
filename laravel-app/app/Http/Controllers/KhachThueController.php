@@ -36,8 +36,18 @@ class KhachThueController extends Controller
             'queQuan' => 'required|string',
         ]);
 
-        $tenant = $this->service->create($validated);
-        return response()->json($tenant, 201);
+        try {
+            $tenant = $this->service->create($validated);
+            return response()->json($tenant, 201);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return response()->json([
+                    'message' => 'Số CCCD này đã tồn tại trong hệ thống.',
+                    'errors' => ['cccd' => ['Số CCCD này đã tồn tại trong hệ thống.']]
+                ], 422);
+            }
+            throw $e;
+        }
     }
 
     public function update(Request $request, $id)
@@ -52,8 +62,18 @@ class KhachThueController extends Controller
             'queQuan' => 'sometimes|required|string',
         ]);
 
-        $tenant = $this->service->update($id, $validated);
-        return response()->json($tenant);
+        try {
+            $tenant = $this->service->update($id, $validated);
+            return response()->json($tenant);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                return response()->json([
+                    'message' => 'Số CCCD này đã tồn tại trong hệ thống.',
+                    'errors' => ['cccd' => ['Số CCCD này đã tồn tại trong hệ thống.']]
+                ], 422);
+            }
+            throw $e;
+        }
     }
 
     public function destroy($id)
