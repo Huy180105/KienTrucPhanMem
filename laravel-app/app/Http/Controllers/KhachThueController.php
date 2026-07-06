@@ -29,11 +29,14 @@ class KhachThueController extends Controller
         $validated = $request->validate([
             'hoTen' => 'required|string',
             'cccd' => 'required|string|unique:khach_thues,cccd',
-            'sdt' => 'required|string',
+            'sdt' => ['required', 'string', 'regex:/^[0-9]{10}$/'],
             'email' => 'required|email',
             'gioiTinh' => 'required|string',
-            'ngaySinh' => 'required|date',
+            'ngaySinh' => 'required|date|before:today',
             'queQuan' => 'required|string',
+        ], [
+            'sdt.regex' => 'Số điện thoại phải chứa đúng 10 chữ số.',
+            'ngaySinh.before' => 'Ngày sinh phải nhỏ hơn ngày hiện tại.'
         ]);
 
         try {
@@ -55,11 +58,14 @@ class KhachThueController extends Controller
         $validated = $request->validate([
             'hoTen' => 'sometimes|required|string',
             'cccd' => 'sometimes|required|string|unique:khach_thues,cccd,' . $id . ',maKhach',
-            'sdt' => 'sometimes|required|string',
+            'sdt' => ['sometimes', 'required', 'string', 'regex:/^[0-9]{10}$/'],
             'email' => 'sometimes|required|email',
             'gioiTinh' => 'sometimes|required|string',
-            'ngaySinh' => 'sometimes|required|date',
+            'ngaySinh' => 'sometimes|required|date|before:today',
             'queQuan' => 'sometimes|required|string',
+        ], [
+            'sdt.regex' => 'Số điện thoại phải chứa đúng 10 chữ số.',
+            'ngaySinh.before' => 'Ngày sinh phải nhỏ hơn ngày hiện tại.'
         ]);
 
         try {

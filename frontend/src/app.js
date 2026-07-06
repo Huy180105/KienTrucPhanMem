@@ -216,7 +216,7 @@ window.rentalApp = function() {
             let list = this.tenants;
             if (this.searchQuery.trim() !== '') {
                 const q = this.searchQuery.toLowerCase();
-                list = list.filter(t => t.hoTen.toLowerCase().includes(q) || t.cccd.includes(q) || t.sdt.includes(q));
+                list = list.filter(t => t.hoTen.toLowerCase().includes(q));
             }
             return list;
         },
@@ -347,6 +347,25 @@ window.rentalApp = function() {
 
         saveTenant() {
             if (!this.checkAdminPermission()) return;
+
+            // Validate Phone Number (must be exactly 10 digits)
+            const phoneRegex = /^[0-9]{10}$/;
+            if (!phoneRegex.test(this.tenantForm.sdt)) {
+                alert('Lỗi: Số điện thoại phải nhập đúng 10 chữ số (từ 0-9).');
+                return;
+            }
+
+            // Validate Birthday (must be less than today)
+            if (this.tenantForm.ngaySinh) {
+                const dob = new Date(this.tenantForm.ngaySinh);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                if (dob >= today) {
+                    alert('Lỗi: Ngày sinh phải nhỏ hơn ngày hiện tại.');
+                    return;
+                }
+            }
+
             if (this.isEditingTenant) {
                 axios.put('/api/tenants/' + this.tenantForm.maKhach, this.tenantForm)
                     .then(res => {

@@ -1011,6 +1011,7 @@
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Ngày Sinh</label>
                             <input type="date" x-model="tenantForm.ngaySinh" required
+                                   :max="new Date().toISOString().split('T')[0]"
                                    class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
                         </div>
                     </div>
