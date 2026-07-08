@@ -1,9 +1,11 @@
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
+import injectHTML from 'vite-plugin-html-inject';
 
 export default defineConfig({
   plugins: [
     tailwindcss(),
+    injectHTML(),
   ],
   server: {
     host: '0.0.0.0',

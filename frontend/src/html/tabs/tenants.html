@@ -1,0 +1,53 @@
+<!-- ==================== 3. TAB: QUẢN LÝ KHÁCH THUÊ ==================== -->
+<div x-show="activeTab === 'tenants'" x-transition class="space-y-6">
+    <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <div>
+            <p class="text-xs text-slate-400 font-medium">Danh sách toàn bộ thông tin khách thuê phòng</p>
+        </div>
+        <button @click="openAddTenant()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-indigo-600/10 transition">
+            <i data-lucide="user-plus" class="w-4 h-4"></i> Đăng ký khách
+        </button>
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-slate-100 bg-slate-50 text-slate-400 text-xs font-bold uppercase">
+                        <th class="py-3 px-6">Mã Khách</th>
+                        <th class="py-3 px-6">Họ Tên</th>
+                        <th class="py-3 px-6">Số CCCD</th>
+                        <th class="py-3 px-6">Số Điện Thoại</th>
+                        <th class="py-3 px-6">Giới Tính</th>
+                        <th class="py-3 px-6">Ngày Sinh</th>
+                        <th class="py-3 px-6">Quê Quán</th>
+                        <th class="py-3 px-6 text-center">Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                    <template x-for="tenant in filteredTenants()" :key="tenant.maKhach">
+                        <tr class="hover:bg-slate-50/50 transition">
+                            <td class="py-4 px-6 font-bold text-slate-800" x-text="'K' + tenant.maKhach"></td>
+                            <td class="py-4 px-6 font-semibold text-slate-800" x-text="tenant.hoTen"></td>
+                            <td class="py-4 px-6" x-text="tenant.cccd"></td>
+                            <td class="py-4 px-6 font-mono" x-text="tenant.sdt"></td>
+                            <td class="py-4 px-6">
+                                <span :class="tenant.gioiTinh === 'Nam' ? 'bg-blue-50 text-blue-600' : 'bg-pink-50 text-pink-600'" 
+                                      class="px-2 py-0.5 rounded text-xs font-bold" 
+                                      x-text="tenant.gioiTinh"></span>
+                            </td>
+                            <td class="py-4 px-6" x-text="formatDate(tenant.ngaySinh)"></td>
+                            <td class="py-4 px-6" x-text="tenant.queQuan"></td>
+                            <td class="py-4 px-6">
+                                <div class="flex justify-center items-center gap-2">
+                                    <button @click="openEditTenant(tenant)" class="p-1 hover:bg-slate-100 text-indigo-600 rounded transition"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                    <button @click="deleteTenant(tenant.maKhach)" class="p-1 hover:bg-rose-50 text-rose-600 rounded transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
