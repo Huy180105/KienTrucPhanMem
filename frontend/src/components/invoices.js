@@ -1,14 +1,22 @@
-// Invoices Component Logic
+// Logic của Component Hóa Đơn (Invoices)
 import axios from 'axios';
 
 export function invoicesComponent() {
     return {
+        /**
+         * Lấy danh sách toàn bộ hóa đơn từ Backend API
+         * GET /api/invoices
+         */
         fetchInvoices() {
             axios.get('/api/invoices')
                 .then(res => { this.invoices = res.data; })
                 .catch(err => console.error('Lỗi tải danh sách hóa đơn:', err));
         },
 
+        /**
+         * Lọc danh sách hóa đơn hiển thị theo trạng thái (Chưa thanh toán / Đã thanh toán)
+         * và theo từ khóa tìm kiếm searchQuery (mã phòng của hợp đồng tương ứng)
+         */
         filteredInvoices() {
             let list = this.invoices;
             if (this.invoiceFilter === 'unpaid') list = list.filter(i => i.trangThai === 'Chưa thanh toán');
@@ -24,11 +32,18 @@ export function invoicesComponent() {
             return list;
         },
 
+        /**
+         * Lấy danh sách hóa đơn liên kết với một hợp đồng cụ thể
+         */
         getContractInvoices(maHopDong) {
             return this.invoices.filter(i => i.maHopDong == maHopDong);
         },
 
-        // --- INVOICES CRUD (STRATEGY PATTERN LOGIC) ---
+        // --- CÁC HÀM XỬ LÝ CRUD HÓA ĐƠN ---
+
+        /**
+         * Mở modal lập hóa đơn mới và thiết lập các giá trị mặc định cho kỳ hóa đơn hiện tại
+         */
         openAddInvoice() {
             this.invoiceForm = {
                 maHD: null,
@@ -40,7 +55,7 @@ export function invoicesComponent() {
                 dienMoi: 0,
                 nuocCu: 0,
                 nuocMoi: 0,
-                strategy: 'default',
+                strategy: 'default', // Sử dụng mẫu Strategy thiết kế mặc định ở Backend
                 baseRent: 0,
                 tongTien: 0
             };
@@ -50,29 +65,45 @@ export function invoicesComponent() {
             });
         },
 
+        /**
+         * Mở modal lập hóa đơn cho một hợp đồng cụ thể
+         */
         openAddInvoiceForContract(contractId) {
             this.openAddInvoice();
             this.invoiceForm.maHopDong = contractId;
             this.updateInvoiceBaseRent();
         },
 
+        /**
+         * Tự động lấy tiền thuê nhà gốc của hợp đồng để làm cơ sở tính toán tổng tiền
+         */
         updateInvoiceBaseRent() {
             const contract = this.contracts.find(c => c.maHopDong === this.invoiceForm.maHopDong);
             if (contract) {
                 this.invoiceForm.baseRent = contract.giaThueThang;
-                this.calculateTotal();
+                this.calculateTotal(); // Tự động tính toán tổng tiền hóa đơn dự toán
             }
         },
 
+        /**
+         * Gọi API tính toán tổng tiền hóa đơn theo Strategy Pattern ở Backend
+         * POST /api/invoices/calculate
+         * 
+         * Luồng chạy:
+         * Client gửi chỉ số điện/nước cũ & mới và phương thức tính (mặc định/trễ hạn) lên Backend.
+         * Backend sẽ chọn chiến lược phù hợp và trả về tổng tiền chính xác.
+         */
         calculateTotal() {
             const form = this.invoiceForm;
             if (!form.maHopDong) return;
 
+            // Nếu chỉ số nhập sai thì không tính tiền phụ phí điện nước
             if (form.dienMoi < form.dienCu || form.nuocMoi < form.nuocCu) {
                 form.tongTien = form.baseRent;
                 return;
             }
 
+            // Gọi API tính tiền theo Strategy Pattern
             axios.post('/api/invoices/calculate', {
                 maHopDong: form.maHopDong,
                 dienCu: form.dienCu,
@@ -82,18 +113,23 @@ export function invoicesComponent() {
                 strategy: form.strategy
             })
             .then(res => {
-                form.tongTien = res.data.tongTien;
+                form.tongTien = res.data.tongTien; // Nhận tổng tiền từ backend trả về
             })
             .catch(err => {
                 console.error('Lỗi tính toán hóa đơn bằng Strategy:', err);
             });
         },
 
+        /**
+         * Lưu hóa đơn mới xuống cơ sở dữ liệu
+         * Chứa rất nhiều ràng buộc kiểm tra nghiệp vụ quan trọng ở Client-side
+         */
         saveInvoice() {
-            if (!this.checkAdminPermission()) return;
+            if (!this.checkAdminPermission()) return; // Bảo mật NFR-03
 
             const form = this.invoiceForm;
 
+            // Nghiệp vụ 1: Chỉ số mới phải lớn hơn hoặc bằng chỉ số cũ
             if (form.dienMoi < form.dienCu) {
                 alert('Lỗi: Số điện mới phải lớn hơn hoặc bằng số điện cũ.');
                 return;
@@ -103,6 +139,7 @@ export function invoicesComponent() {
                 return;
             }
 
+            // Nghiệp vụ 2: Kỳ hóa đơn không được vượt quá thời gian hiện tại
             const today = new Date();
             const currentYear = today.getFullYear();
             const currentMonth = today.getMonth() + 1;
@@ -121,11 +158,13 @@ export function invoicesComponent() {
                 const endPeriod = endDate.getFullYear() * 12 + (endDate.getMonth() + 1);
                 const billingPeriod = parseInt(form.nam) * 12 + parseInt(form.thang);
                 
+                // Nghiệp vụ 3: Kỳ hóa đơn phải thuộc thời hạn hiệu lực của hợp đồng thuê phòng
                 if (billingPeriod < startPeriod || billingPeriod > endPeriod) {
                     alert(`Lỗi: Kỳ hóa đơn (Tháng ${form.thang}/${form.nam}) phải nằm trong thời hạn hiệu lực của hợp đồng (từ ${this.formatDate(contract.ngayBatDau)} đến ${this.formatDate(contract.ngayKetThuc)}).`);
                     return;
                 }
 
+                // Nghiệp vụ 4: Mỗi phòng trọ chỉ được phép có duy nhất 1 hóa đơn cho mỗi kỳ (Tháng/Năm)
                 const roomId = contract.maPhong;
                 const duplicate = this.invoices.find(i => {
                     const existingContract = this.contracts.find(c => c.maHopDong == i.maHopDong);
@@ -140,6 +179,7 @@ export function invoicesComponent() {
                 }
             }
 
+            // Tiến hành gửi yêu cầu lập hóa đơn
             axios.post('/api/invoices', this.invoiceForm)
                 .then(res => {
                     this.fetchInvoices();
@@ -148,8 +188,12 @@ export function invoicesComponent() {
                 .catch(err => alert('Lỗi lập hóa đơn: ' + (err.response?.data?.message || err.message)));
         },
 
+        /**
+         * Thanh toán hóa đơn (Ghi nhận trạng thái Đã thanh toán)
+         * PUT /api/invoices/{id}/pay
+         */
         payInvoice(maHD) {
-            if (!this.checkAdminPermission()) return;
+            if (!this.checkAdminPermission()) return; // Bảo mật NFR-03
             axios.put('/api/invoices/' + maHD + '/pay')
                 .then(res => {
                     this.fetchInvoices();
@@ -158,8 +202,12 @@ export function invoicesComponent() {
                 .catch(err => alert('Lỗi thanh toán hóa đơn: ' + (err.response?.data?.message || err.message)));
         },
 
+        /**
+         * Xóa hóa đơn khỏi cơ sở dữ liệu
+         * Nghiệp vụ bảo mật: Không được phép xóa các hóa đơn ở trạng thái 'Chưa thanh toán' để tránh thất thoát dữ liệu.
+         */
         deleteInvoice(maHD) {
-            if (!this.checkAdminPermission()) return;
+            if (!this.checkAdminPermission()) return; // Bảo mật NFR-03
             const invoice = this.invoices.find(i => i.maHD === maHD);
             if (invoice && invoice.trangThai === 'Chưa thanh toán') {
                 alert('Lỗi bảo mật: Không được phép xóa hóa đơn chưa thanh toán. Vui lòng thanh toán trước.');
@@ -174,10 +222,15 @@ export function invoicesComponent() {
             }
         },
 
+        /**
+         * Gửi email thông báo chi tiết hóa đơn (tiền phòng, điện, nước) tới khách thuê tương ứng
+         * POST /api/invoices/{id}/send-email
+         */
         sendInvoiceEmail(maHD, event) {
             if (this.sendingEmails.includes(maHD)) return;
             this.sendingEmails.push(maHD);
             
+            // Hiển thị vòng quay Spinner tải trong khi gửi mail
             const btn = event.currentTarget;
             const originalHtml = btn.innerHTML;
             btn.disabled = true;
