@@ -28,10 +28,10 @@ class DatabaseSeeder extends Seeder
         User::truncate();
         Schema::enableForeignKeyConstraints();
 
-        // 1. Create Default Admin User
+                // 1. Create Default Admin User
         User::factory()->create([
             'name' => 'Quản trị viên',
-            'email' => 'admin@antigravity.com',
+            'email' => 'admin@gmail.com',
             'password' => bcrypt('password'),
         ]);
 

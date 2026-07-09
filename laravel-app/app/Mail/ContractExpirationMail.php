@@ -21,10 +21,10 @@ class ContractExpirationMail extends Mailable
         $this->tenantData = $tenantData;
     }
 
-    public function envelope(): Envelope
+        public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '[Antigravity] Thông báo sắp hết hạn hợp đồng thuê phòng - ' . $this->contractData['maPhong'],
+            subject: '[Quản Lý Phòng Trọ] Thông báo sắp hết hạn hợp đồng thuê phòng - ' . $this->contractData['maPhong'],
         );
     }
 

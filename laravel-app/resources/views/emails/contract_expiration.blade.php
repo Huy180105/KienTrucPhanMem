@@ -135,7 +135,7 @@
     </div>
 
     <div class="footer">
-        Hệ Thống Nhà Trọ Antigravity © 2026 - Email tự động gửi từ hệ thống
+        Hệ Thống Quản Lý Nhà Trọ © 2026 - Email tự động gửi từ hệ thống
     </div>
 </div>
 
