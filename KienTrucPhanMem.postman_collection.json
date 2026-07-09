@@ -2,10 +2,62 @@
 	"info": {
 		"_postman_id": "a90b4d4f-d890-482a-a92c-55cbf3f9eb2c",
 		"name": "Quản Lý Phòng Trọ - Kiến Trúc Phần Mềm",
-		"description": "Bộ sưu tập API kiểm thử toàn bộ hệ thống Quản lý phòng trọ (Laravel + MySQL + Docker)",
+		"description": "Bộ sưu tập API đầy đủ kiểm thử toàn bộ hệ thống Quản lý phòng trọ (Laravel 12 + MySQL)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
+		{
+			"name": "0. Xác Thực (Authentication)",
+			"item": [
+				{
+					"name": "Đăng nhập (Login)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@gmail.com\",\n  \"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "login"]
+						}
+					}
+				},
+				{
+					"name": "Lấy thông tin User hiện tại",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/user",
+							"host": ["{{base_url}}"],
+							"path": ["api", "user"]
+						}
+					}
+				},
+				{
+					"name": "Đăng xuất (Logout)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/logout",
+							"host": ["{{base_url}}"],
+							"path": ["api", "logout"]
+						}
+					}
+				}
+			]
+		},
 		{
 			"name": "1. Phòng Trọ",
 			"item": [
@@ -20,6 +72,20 @@
 							"raw": "{{base_url}}/api/rooms",
 							"host": ["{{base_url}}"],
 							"path": ["api", "rooms"]
+						}
+					}
+				},
+				{
+					"name": "Chi tiết phòng trọ",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/rooms/P101",
+							"host": ["{{base_url}}"],
+							"path": ["api", "rooms", "P101"]
 						}
 					}
 				},
@@ -58,6 +124,53 @@
 							"path": ["api", "rooms"]
 						}
 					}
+				},
+				{
+					"name": "Cập nhật phòng trọ",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tenPhong\": \"Phòng 301 Vip\",\n  \"tang\": 3,\n  \"giaPhong\": 3800000,\n  \"trangThai\": \"Trống\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/rooms/P301",
+							"host": ["{{base_url}}"],
+							"path": ["api", "rooms", "P301"]
+						}
+					}
+				},
+				{
+					"name": "Xóa phòng trọ",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/rooms/P301",
+							"host": ["{{base_url}}"],
+							"path": ["api", "rooms", "P301"]
+						}
+					}
+				},
+				{
+					"name": "Lấy danh sách tài sản của phòng",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/rooms/P101/assets",
+							"host": ["{{base_url}}"],
+							"path": ["api", "rooms", "P101", "assets"]
+						}
+					}
 				}
 			]
 		},
@@ -79,6 +192,37 @@
 					}
 				},
 				{
+					"name": "Chi tiết khách thuê",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tenants/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tenants", "1"]
+						}
+					}
+				},
+				{
+					"name": "Tìm kiếm khách thuê",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tenants/search?keyword=Nam",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tenants", "search"],
+							"query": [
+								{ "key": "keyword", "value": "Nam" }
+							]
+						}
+					}
+				},
+				{
 					"name": "Thêm khách thuê mới",
 					"request": {
 						"method": "POST",
@@ -88,12 +232,45 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"hoTen\": \"Nguyễn Thị Bình\",\n  \"cccd\": \"030099112233\",\n  \"sdt\": \"0988776655\",\n  \"gioiTinh\": \"Nữ\",\n  \"ngaySinh\": \"2000-10-20\",\n  \"queQuan\": \"Nam Định\"\n}"
+							"raw": "{\n  \"hoTen\": \"Nguyễn Văn D\",\n  \"cccd\": \"012345678904\",\n  \"sdt\": \"0987654324\",\n  \"email\": \"nguyenvand@gmail.com\",\n  \"gioiTinh\": \"Nam\",\n  \"ngaySinh\": \"1997-07-07\",\n  \"queQuan\": \"Hải Phòng\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/tenants",
 							"host": ["{{base_url}}"],
 							"path": ["api", "tenants"]
+						}
+					}
+				},
+				{
+					"name": "Cập nhật thông tin khách thuê",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"hoTen\": \"Nguyễn Văn D (Đã Sửa)\",\n  \"sdt\": \"0987654329\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tenants/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tenants", "1"]
+						}
+					}
+				},
+				{
+					"name": "Xóa khách thuê",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tenants/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "tenants", "1"]
 						}
 					}
 				}
@@ -117,6 +294,51 @@
 					}
 				},
 				{
+					"name": "Chi tiết hợp đồng",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/contracts/1001",
+							"host": ["{{base_url}}"],
+							"path": ["api", "contracts", "1001"]
+						}
+					}
+				},
+				{
+					"name": "Tìm kiếm hợp đồng",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/contracts/search?keyword=P101",
+							"host": ["{{base_url}}"],
+							"path": ["api", "contracts", "search"],
+							"query": [
+								{ "key": "keyword", "value": "P101" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Lấy hợp đồng đang hiệu lực",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/contracts/active",
+							"host": ["{{base_url}}"],
+							"path": ["api", "contracts", "active"]
+						}
+					}
+				},
+				{
 					"name": "Lập hợp đồng mới (Facade & Observer)",
 					"request": {
 						"method": "POST",
@@ -126,7 +348,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"maPhong\": \"P301\",\n  \"maKhach\": 1,\n  \"ngayLap\": \"2026-07-04\",\n  \"ngayBatDau\": \"2026-07-04\",\n  \"ngayKetThuc\": \"2027-07-04\",\n  \"tienCoc\": 3500000,\n  \"giaThueThang\": 3500000,\n  \"trangThai\": \"Đang hiệu lực\"\n}"
+							"raw": "{\n  \"maPhong\": \"P102\",\n  \"maKhach\": 1,\n  \"ngayLap\": \"2026-07-04\",\n  \"ngayBatDau\": \"2026-07-04\",\n  \"ngayKetThuc\": \"2027-07-04\",\n  \"tienCoc\": 2500000,\n  \"giaThueThang\": 2500000\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/contracts",
@@ -136,7 +358,54 @@
 					}
 				},
 				{
-					"name": "Gửi email nhắc nhở hợp đồng",
+					"name": "Cập nhật hợp đồng",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tienCoc\": 3200000\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/contracts/1001",
+							"host": ["{{base_url}}"],
+							"path": ["api", "contracts", "1001"]
+						}
+					}
+				},
+				{
+					"name": "Thanh lý hợp đồng (Observer)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/contracts/1001/terminate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "contracts", "1001", "terminate"]
+						}
+					}
+				},
+				{
+					"name": "Xóa hợp đồng",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/contracts/1001",
+							"host": ["{{base_url}}"],
+							"path": ["api", "contracts", "1001"]
+						}
+					}
+				},
+				{
+					"name": "Gửi email nhắc nhở hết hạn",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -169,7 +438,52 @@
 					}
 				},
 				{
-					"name": "Tính hóa đơn - Mặc định (Strategy)",
+					"name": "Chi tiết hóa đơn",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/5001",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "5001"]
+						}
+					}
+				},
+				{
+					"name": "Tìm kiếm hóa đơn",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/search?keyword=5001",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "search"],
+							"query": [
+								{ "key": "keyword", "value": "5001" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Lấy danh sách hóa đơn chưa thanh toán",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/unpaid",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "unpaid"]
+						}
+					}
+				},
+				{
+					"name": "Tính hóa đơn dự toán (Strategy)",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -178,7 +492,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"contractId\": 1001,\n  \"month\": 7,\n  \"year\": 2026,\n  \"soDienCu\": 100,\n  \"soDienMoi\": 150,\n  \"soNuocCu\": 10,\n  \"soNuocMoi\": 15,\n  \"isLate\": false\n}"
+							"raw": "{\n  \"maHopDong\": 1001,\n  \"dienCu\": 100,\n  \"dienMoi\": 150,\n  \"nuocCu\": 10,\n  \"nuocMoi\": 15,\n  \"strategy\": \"default\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/invoices/calculate",
@@ -188,7 +502,7 @@
 					}
 				},
 				{
-					"name": "Tính hóa đơn - Trễ hạn đóng phạt (Strategy)",
+					"name": "Lập hóa đơn mới (Lưu DB)",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -197,12 +511,73 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"contractId\": 1001,\n  \"month\": 7,\n  \"year\": 2026,\n  \"soDienCu\": 100,\n  \"soDienMoi\": 150,\n  \"soNuocCu\": 10,\n  \"soNuocMoi\": 15,\n  \"isLate\": true\n}"
+							"raw": "{\n  \"maHopDong\": 1001,\n  \"thang\": 8,\n  \"nam\": 2026,\n  \"ngayLap\": \"2026-08-01\",\n  \"dienCu\": 150,\n  \"dienMoi\": 200,\n  \"nuocCu\": 15,\n  \"nuocMoi\": 20,\n  \"strategy\": \"default\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/invoices/calculate",
+							"raw": "{{base_url}}/api/invoices",
 							"host": ["{{base_url}}"],
-							"path": ["api", "invoices", "calculate"]
+							"path": ["api", "invoices"]
+						}
+					}
+				},
+				{
+					"name": "Cập nhật hóa đơn",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"dienMoi\": 210\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/invoices/5001",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "5001"]
+						}
+					}
+				},
+				{
+					"name": "Thanh toán hóa đơn",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/5001/pay",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "5001", "pay"]
+						}
+					}
+				},
+				{
+					"name": "Xóa hóa đơn",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/5001",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "5001"]
+						}
+					}
+				},
+				{
+					"name": "Gửi email hóa đơn",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/5001/send-email",
+							"host": ["{{base_url}}"],
+							"path": ["api", "invoices", "5001", "send-email"]
 						}
 					}
 				}
@@ -222,6 +597,51 @@
 							"raw": "{{base_url}}/api/assets",
 							"host": ["{{base_url}}"],
 							"path": ["api", "assets"]
+						}
+					}
+				},
+				{
+					"name": "Chi tiết tài sản",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/assets/101",
+							"host": ["{{base_url}}"],
+							"path": ["api", "assets", "101"]
+						}
+					}
+				},
+				{
+					"name": "Tìm kiếm tài sản",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/assets/search?keyword=Điều hòa",
+							"host": ["{{base_url}}"],
+							"path": ["api", "assets", "search"],
+							"query": [
+								{ "key": "keyword", "value": "Điều hòa" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Lấy nhật ký đối soát tài sản",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/assets/logs",
+							"host": ["{{base_url}}"],
+							"path": ["api", "assets", "logs"]
 						}
 					}
 				},
@@ -283,7 +703,7 @@
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "https://upcountry-startle-unselfish.ngrok-free.dev",
+			"value": "http://localhost:8880",
 			"type": "string"
 		}
 	]
