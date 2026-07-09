@@ -224,6 +224,58 @@
 							"path": ["api", "assets"]
 						}
 					}
+				},
+				{
+					"name": "Thêm tài sản mới",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tenTaiSan\": \"Tủ lạnh LG 150L\",\n  \"soLuong\": 1,\n  \"tinhTrang\": \"Tốt\",\n  \"maPhong\": \"P102\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/assets",
+							"host": ["{{base_url}}"],
+							"path": ["api", "assets"]
+						}
+					}
+				},
+				{
+					"name": "Cập nhật tài sản",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tenTaiSan\": \"Tủ lạnh LG 150L\",\n  \"soLuong\": 2,\n  \"tinhTrang\": \"Cũ\",\n  \"maPhong\": \"P102\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/assets/101",
+							"host": ["{{base_url}}"],
+							"path": ["api", "assets", "101"]
+						}
+					}
+				},
+				{
+					"name": "Xóa tài sản",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "Accept", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/assets/101",
+							"host": ["{{base_url}}"],
+							"path": ["api", "assets", "101"]
+						}
+					}
 				}
 			]
 		}
